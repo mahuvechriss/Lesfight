@@ -317,6 +317,9 @@ class Fighter {
         if(opp&&this.state!=='knocked')this.facingRight=opp.x>this.x;
         if(this.state!=='blocking')this.stamina=Math.min(100,this.stamina+0.15);
         else {this.stamina-=0.4;if(this.stamina<=0){this.stamina=0;this.blockPressed=false;}}
+        // Blocking state
+        if(this.blockPressed && this.state!=='attacking' && this.state!=='hit' && this.state!=='knocked') this.state='blocking';
+        else if(this.state==='blocking' && !this.blockPressed && this.stateTimer<=0) this.state='idle';
         if(this.state==='idle')this.addSuper(0.015);
     }
     draw(ctx) {
@@ -619,8 +622,7 @@ function btnDown(id) {
         case'btnBlock': TOUCH.block=true; player.blockPressed=true; break;
         case'btnLP': player.attack('light'); break;
         case'btnHP': player.attack('heavy'); break;
-        case'btnLK': player.attack('kick'); break;
-        case'btnHK': player.attack('kick'); break;
+        case'btnLK': player.attack('kick'); break;            case'btnHK': player.attack('heavy'); break;
         case'btnSP': player.attack('special'); break;
         case'btnULT': player.attack('ultimate'); break;
     }
@@ -634,6 +636,7 @@ document.addEventListener('keydown', e => {
     if(gameState==='fight'){initAudio();
         if(e.key==='a')JOYSTICK.dx=-1;if(e.key==='d')JOYSTICK.dx=1;
         if(e.key==='w')JOYSTICK.dy=-0.7;if(e.key==='s')JOYSTICK.dy=0.7;
+        if(e.key===' '||e.key==='Space') player.blockPressed=true;
         if(e.key==='j')player.attack('light');if(e.key==='k')player.attack('heavy');
         if(e.key==='l')player.attack('kick');if(e.key===';'||e.key===':')player.attack('heavy');
         if(e.key==='u')player.attack('special');if(e.key==='i')player.attack('ultimate');
@@ -642,6 +645,7 @@ document.addEventListener('keydown', e => {
 document.addEventListener('keyup', e => {
     if(e.key==='a'&&JOYSTICK.dx<0)JOYSTICK.dx=0;if(e.key==='d'&&JOYSTICK.dx>0)JOYSTICK.dx=0;
     if(e.key==='w'&&JOYSTICK.dy<0)JOYSTICK.dy=0;if(e.key==='s'&&JOYSTICK.dy>0)JOYSTICK.dy=0;
+    if(e.key===' '||e.key==='Space') player.blockPressed=false;
 });
 
 // ===== GAME LOOP =====
@@ -670,7 +674,6 @@ function update(dt) {
     const md=player.w*0.55;
     if(dist<md){const p=(md-dist)/2;const dir=player.x<enemy.x?-1:1;player.x+=dir*p;enemy.x-=dir*p;}
     checkHit(player,enemy);checkHit(enemy,player);
-    if(comboTimer>0){comboTimer-=dt;if(comboTimer<=0)comboCount=0;}
     screenShake*=0.88;if(screenShake<0.1)screenShake=0;
     particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.2;p.life--;return p.life>0;});
     floatTexts=floatTexts.filter(f=>{f.y-=0.6;f.timer-=dt;return f.timer>0;});
@@ -711,7 +714,8 @@ function draw() {
     ctx.beginPath();ctx.moveTo(W-18,H*GROUND_RATIO);ctx.lineTo(W-18,H);ctx.stroke();ctx.setLineDash([]);
     
     // Draw fighters (sorted by Z for depth)
-    player.draw(ctx); enemy.draw(ctx);
+    const fighters = [player, enemy].sort((a,b)=>a.z-b.z);
+    fighters.forEach(f=>f.draw(ctx));
     
     // Particles
     particles.forEach(p=>{ctx.globalAlpha=p.life/p.maxLife;ctx.fillStyle=p.color;
@@ -759,7 +763,7 @@ function draw() {
     if(announceText){ctx.font='bold 56px Arial';ctx.textAlign='center';ctx.strokeStyle='#000';ctx.lineWidth=4;
         ctx.fillStyle=announceText==='FIGHT!'?'#ff4444':'#fff';ctx.strokeText(announceText,cx,H*0.35);ctx.fillText(announceText,cx,H*0.35);}
     if(!('ontouchstart'in window)&&frameCount<240){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='center';
-        ctx.fillText('WASD:Move  J:LP  K:HP  L:LK  ;:HK  U:SP  I:ULT',cx,H-16);}
+        ctx.fillText('WASD:Move  Space:Block  J:LP  K:HP  L:LK  ;:HK  U:SP  I:ULT',cx,H-16);}
 }
 
 function loop(ts) {
