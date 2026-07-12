@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LES FIGHT - Web Edition</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; touch-action: none; -webkit-user-select: none; user-select: none; }
 
-/* Force landscape on mobile */
 @media (orientation: portrait) {
   #rotateHint { display: flex !important; }
   #gameContainer { display: none !important; }
@@ -46,15 +46,13 @@ canvas { display: block; width: 100%; height: 100%; }
 .play-btn { padding: 14px 50px; margin-top: 14px; font-size: clamp(16px, 2vw, 24px); font-weight: 900; border: none; background: linear-gradient(135deg, #ff4400, #ff6600); color: #fff; border-radius: 50px; cursor: pointer; letter-spacing: 3px; box-shadow: 0 4px 30px rgba(255,68,0,0.4); }
 .play-btn:active { transform: scale(0.95); }
 
-/* Settings gear */
 #settingsBtn {
     position: absolute; top: 12px; right: 16px; z-index: 101;
     font-size: clamp(22px, 3vw, 30px); cursor: pointer; opacity: 0.4;
-    transition: opacity 0.3s; padding: 8px;
+    transition: opacity 0.3s; padding: 8px; color:#fff;
 }
 #settingsBtn:hover, #settingsBtn:active { opacity: 0.9; }
 
-/* Settings screen */
 #settingsScreen {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(5, 2, 12, 0.96); z-index: 200;
@@ -63,96 +61,33 @@ canvas { display: block; width: 100%; height: 100%; }
     overflow: hidden;
 }
 #settingsScreen.show { opacity: 1; pointer-events: all; }
-#settingsHeader {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 18px; flex-shrink: 0;
-}
+#settingsHeader { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; flex-shrink: 0; }
 #settingsTitle { font-size: clamp(16px, 2vw, 22px); font-weight: 900; color: #fff; letter-spacing: 2px; }
 #settingsClose { font-size: clamp(20px, 2.5vw, 28px); color: #ff4444; cursor: pointer; padding: 6px 10px; }
-#settingsContent {
-    flex: 1; position: relative; overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05); margin: 4px 10px;
-    border-radius: 12px; background: rgba(0,0,0,0.3);
-}
-#settingsHint {
-    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
-    color: rgba(255,255,255,0.2); font-size: clamp(10px, 1vw, 13px);
-    text-align: center; letter-spacing: 1px; pointer-events: none;
-    z-index: 10; white-space: nowrap;
-}
-#settingsFooter {
-    display: flex; align-items: center; justify-content: center;
-    gap: 10px; padding: 10px 18px; flex-shrink: 0;
-    flex-wrap: wrap;
-}
-.settings-btn {
-    padding: 8px 22px; font-size: clamp(11px, 1.2vw, 14px); font-weight: bold;
-    border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
-    color: #fff; border-radius: 20px; cursor: pointer; letter-spacing: 1px;
-}
+#settingsContent { flex: 1; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); margin: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.3); }
+#settingsHint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.2); font-size: clamp(10px, 1vw, 13px); text-align: center; letter-spacing: 1px; pointer-events: none; z-index: 10; white-space: nowrap; }
+#settingsFooter { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 18px; flex-shrink: 0; flex-wrap: wrap; }
+.settings-btn { padding: 8px 22px; font-size: clamp(11px, 1.2vw, 14px); font-weight: bold; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #fff; border-radius: 20px; cursor: pointer; letter-spacing: 1px; }
 .settings-btn:active { transform: scale(0.95); }
 .settings-btn.reset { border-color: #ff444466; color: #ff6666; }
 .settings-btn.save { border-color: #44ff8866; color: #66ff88; background: rgba(68,255,136,0.1); }
 .settings-btn.add { border-color: #4488ff66; color: #6688ff; }
 
-/* Settings draggable button */
-.setting-btn {
-    position: absolute; z-index: 20;
-    border-radius: 50%; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    color: #fff; cursor: grab; touch-action: none;
-    border: 2px solid rgba(255,255,255,0.12);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background: rgba(255,255,255,0.04);
-}
+.setting-btn { position: absolute; z-index: 20; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; cursor: grab; touch-action: none; border: 2px solid rgba(255,255,255,0.12); transition: border-color 0.2s, box-shadow 0.2s; background: rgba(255,255,255,0.04); }
 .setting-btn.dragging { border-color: #ff6600; box-shadow: 0 0 30px rgba(255,102,0,0.3); z-index: 50; cursor: grabbing; }
-.setting-btn .del-btn {
-    position: absolute; top: -8px; right: -8px; width: 22px; height: 22px;
-    border-radius: 50%; background: #ff3333; border: none; color: #fff;
-    font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    opacity: 0.8; z-index: 25;
-}
+.setting-btn .del-btn { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 50%; background: #ff3333; border: none; color: #fff; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.8; z-index: 25; }
 .setting-btn .del-btn:active { opacity: 1; transform: scale(1.2); }
-.setting-btn .size-ctrl {
-    position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
-    width: 80px; display: flex; align-items: center; gap: 4px;
-    opacity: 0.6; pointer-events: auto;
-}
-.setting-btn .size-ctrl input[type=range] {
-    width: 100%; height: 3px; -webkit-appearance: none; appearance: none;
-    background: rgba(255,255,255,0.2); border-radius: 2px; outline: none;
-}
-.setting-btn .size-ctrl input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
-    background: #ff6600; cursor: pointer;
-}
-.setting-btn .size-num {
-    font-size: 8px; color: rgba(255,255,255,0.5); min-width: 18px; text-align: center;
-}
+.setting-btn .size-ctrl { position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%); width: 80px; display: flex; align-items: center; gap: 4px; opacity: 0.6; pointer-events: auto; }
+.setting-btn .size-ctrl input[type=range] { width: 100%; height: 3px; -webkit-appearance: none; appearance: none; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; }
+.setting-btn .size-ctrl input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ff6600; cursor: pointer; }
+.setting-btn .size-num { font-size: 8px; color: rgba(255,255,255,0.5); min-width: 18px; text-align: center; }
 
-/* Deleted buttons tray */
-#deletedTray {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    padding: 6px; background: rgba(255,68,68,0.06); border-top: 1px solid rgba(255,68,68,0.1);
-    display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: center;
-    min-height: 40px;
-}
+#deletedTray { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px; background: rgba(255,68,68,0.06); border-top: 1px solid rgba(255,68,68,0.1); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: center; min-height: 40px; }
 #deletedTray .tray-label { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 1px; margin-right: 4px; }
-#deletedTray .del-item {
-    width: 40px; height: 40px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer; opacity: 0.5;
-    background: rgba(255,255,255,0.03);
-}
+#deletedTray .del-item { width: 40px; height: 40px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; opacity: 0.5; background: rgba(255,255,255,0.03); color:#fff; }
 #deletedTray .del-item:active { opacity: 1; background: rgba(255,255,255,0.1); }
 
-/* Result */
-#resultScreen {
-    position: absolute; top:0;left:0;width:100%;height:100%;
-    background: rgba(0,0,0,0.88); display:flex;flex-direction:column;
-    align-items:center;justify-content:center;z-index:50;
-    opacity:0;pointer-events:none;transition:opacity 0.5s;
-}
+#resultScreen { position: absolute; top:0;left:0;width:100%;height:100%; background: rgba(0,0,0,0.88); display:flex;flex-direction:column; align-items:center;justify-content:center;z-index:50; opacity:0;pointer-events:none;transition:opacity 0.5s; }
 #resultScreen.show{opacity:1;pointer-events:all;}
 .res-win{font-size:clamp(32px,5vw,56px);font-weight:900;margin-bottom:4px;}
 .res-win.win{color:#ffcc00;text-shadow:0 0 40px rgba(255,204,0,0.3);}
@@ -161,12 +96,10 @@ canvas { display: block; width: 100%; height: 100%; }
 .res-btn{padding:10px 36px;margin:4px;font-size:clamp(13px,1.4vw,17px);font-weight:bold;border:2px solid #ff4444;background:transparent;color:#fff;border-radius:50px;cursor:pointer;letter-spacing:2px;min-width:140px;}
 .res-btn:active{background:#ff4444;color:#000;transform:scale(0.95);}
 
-/* Round announce */
 #roundAnnounce{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:40;opacity:0;pointer-events:none;}
 #roundAnnounce.show{opacity:1;}
 .round-text{font-size:clamp(44px,10vw,100px);font-weight:900;color:#fff;-webkit-text-stroke:3px #ff4444;text-stroke:3px #ff4444;text-shadow:0 0 60px rgba(255,68,68,0.4);}
 
-/* Character select */
 #charSelectScreen{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#0d0d1a 0%,#1a0a0a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:60;opacity:0;pointer-events:none;transition:opacity 0.5s;}
 #charSelectScreen.show{opacity:1;pointer-events:all;}
 .char-title{font-size:clamp(18px,2.5vw,30px);font-weight:900;color:#fff;margin-bottom:14px;letter-spacing:3px;}
@@ -174,50 +107,20 @@ canvas { display: block; width: 100%; height: 100%; }
 .char-card{width:clamp(80px,14vw,130px);height:clamp(110px,18vw,170px);border:2px solid #333;border-radius:10px;background:#111122;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;padding:8px;}
 .char-card.selected{border-color:#ff6600;box-shadow:0 0 25px rgba(255,102,0,0.3);}
 .char-card:active{transform:scale(0.95);}
-.char-avatar{font-size:clamp(32px,5vw,56px);margin-bottom:6px;}
+.char-avatar{font-size:clamp(32px,5vw,56px);margin-bottom:6px;color:#fff;}
 .char-name{color:#fff;font-size:clamp(10px,1vw,13px);font-weight:bold;letter-spacing:1px;}
 .char-desc{color:#888;font-size:clamp(7px,0.8vw,10px);margin-top:2px;}
 .char-select-btn{margin-top:14px;padding:10px 40px;font-size:clamp(14px,1.8vw,20px);font-weight:900;border:none;background:linear-gradient(135deg,#ff4400,#ff6600);color:#fff;border-radius:50px;cursor:pointer;letter-spacing:2px;box-shadow:0 4px 30px rgba(255,68,0,0.3);}
 .char-select-btn:active{transform:scale(0.95);}
 
-/* Joystick zone */
-#joystickZone {
-    position: absolute; bottom: 10%; left: 3%; width: 130px; height: 130px; z-index: 10;
-    border-radius: 50%; background: rgba(255,255,255,0.05);
-    border: 2px solid rgba(255,255,255,0.1);
-    display: flex; align-items: center; justify-content: center;
-}
-#joystickKnob {
-    width: 50px; height: 50px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-    border: 1px solid rgba(255,255,255,0.2);
-    position: absolute; transition: none;
-    pointer-events: none;
-}
-#joystickLabel {
-    position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%);
-    font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 2px;
-    white-space: nowrap; pointer-events: none;
-}
+#joystickZone { position: absolute; bottom: 10%; left: 3%; width: 130px; height: 130px; z-index: 10; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
+#joystickKnob { width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.3), rgba(255,255,255,0.1)); border: 1px solid rgba(255,255,255,0.2); position: absolute; transition: none; pointer-events: none; }
+#joystickLabel { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); font-size: 9px; color: rgba(255,255,255,0.3); letter-spacing: 2px; white-space: nowrap; pointer-events: none; }
 
-/* Action buttons */
-.ctrl-btn {
-    position: absolute; z-index: 10;
-    border-radius: 50%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: #fff; font-size: 18px;
-    transition: transform 0.1s, background 0.1s;
-    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-    pointer-events: auto;
-}
+.ctrl-btn { position: absolute; z-index: 10; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; font-size: 18px; transition: transform 0.1s, background 0.1s; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); pointer-events: auto; }
 .ctrl-btn .lbl { font-size: 7px; opacity: 0.7; display: block; margin-top: -1px; }
-#btnBlock {
-    position: absolute; z-index: 10;
-    border-radius: 12px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: transform 0.1s, background 0.1s;
-    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-}
+.ctrl-btn i { font-size: inherit; }
+#btnBlock { position: absolute; z-index: 10; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.1s, background 0.1s; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
 </style>
 </head>
 <body>
@@ -250,37 +153,37 @@ canvas { display: block; width: 100%; height: 100%; }
                 <option value="3">Best of 5</option>
             </select>
         </div>
-        <button class="play-btn" id="startBtn">⚔️ FIGHT</button>
-        <div id="settingsBtn">⚙️</div>
+        <button class="play-btn" id="startBtn"><i class="fa-solid fa-crosshairs"></i> FIGHT</button>
+        <div id="settingsBtn"><i class="fa-solid fa-sliders"></i></div>
     </div>
 
     <div id="settingsScreen">
         <div id="settingsHeader">
-            <div id="settingsTitle">🎮 CUSTOMIZE CONTROLS</div>
-            <div id="settingsClose">✕</div>
+            <div id="settingsTitle"><i class="fa-solid fa-gamepad"></i> CUSTOMIZE CONTROLS</div>
+            <div id="settingsClose"><i class="fa-solid fa-xmark"></i></div>
         </div>
         <div id="settingsContent">
-            <div id="settingsHint">↕ Drag to move &nbsp;·&nbsp; ✕ to remove &nbsp;·&nbsp; Slider for size</div>
+            <div id="settingsHint"><i class="fa-solid fa-arrows-up-down-left-right"></i> Drag to move &nbsp;·&nbsp; <i class="fa-solid fa-xmark"></i> to remove &nbsp;·&nbsp; <i class="fa-solid fa-sliders"></i> for size</div>
             <div id="deletedTray"></div>
         </div>
         <div id="settingsFooter">
-            <button class="settings-btn add" id="settingsAddBtn">+ Add buttons</button>
-            <button class="settings-btn reset" id="settingsResetBtn">↺ Reset</button>
-            <button class="settings-btn save" id="settingsSaveBtn">✓ Done</button>
+            <button class="settings-btn add" id="settingsAddBtn"><i class="fa-solid fa-plus"></i> Add all</button>
+            <button class="settings-btn reset" id="settingsResetBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            <button class="settings-btn save" id="settingsSaveBtn"><i class="fa-solid fa-check"></i> Done</button>
         </div>
     </div>
 
     <div id="charSelectScreen">
-        <div class="char-title">SELECT YOUR FIGHTER</div>
+        <div class="char-title"><i class="fa-solid fa-user"></i> SELECT YOUR FIGHTER</div>
         <div class="char-grid" id="charGrid"></div>
-        <button class="char-select-btn" id="charConfirmBtn">✅ FIGHT!</button>
+        <button class="char-select-btn" id="charConfirmBtn"><i class="fa-solid fa-check"></i> FIGHT!</button>
     </div>
 
     <div id="resultScreen">
         <div class="res-win" id="resText">YOU WIN!</div>
         <div class="res-sub" id="resSub">Perfect Victory!</div>
-        <button class="res-btn" id="rematchBtn">🔄 Rematch</button>
-        <button class="res-btn" id="menuBtn" style="margin-top:2px">🏠 Menu</button>
+        <button class="res-btn" id="rematchBtn"><i class="fa-solid fa-arrow-rotate-right"></i> Rematch</button>
+        <button class="res-btn" id="menuBtn" style="margin-top:2px"><i class="fa-solid fa-house"></i> Menu</button>
     </div>
 
     <div id="roundAnnounce"><div class="round-text" id="roundAnnounceText">ROUND 1</div></div>
@@ -288,7 +191,7 @@ canvas { display: block; width: 100%; height: 100%; }
 
 <script>
 // ============================================================
-// LES FIGHT - Web Edition v4 - Customizable Controls!
+// LES FIGHT v5 - Font Awesome Icons + Realistic Human Fighters
 // ============================================================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -304,77 +207,57 @@ function playKO() { if(!actx)return; try{const o=actx.createOscillator(),g=actx.
 function playSpecial() { if(!actx)return; try{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.type='sine';o.frequency.setValueAtTime(600,actx.currentTime);o.frequency.exponentialRampToValueAtTime(1500,actx.currentTime+0.15);o.frequency.exponentialRampToValueAtTime(300,actx.currentTime+0.35);g.gain.setValueAtTime(0.25,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+0.4);o.start();o.stop(actx.currentTime+0.4)}catch(e){} }
 function playUltimate() { if(!actx)return; try{const o=actx.createOscillator(),g=actx.createGain();o.connect(g);g.connect(actx.destination);o.type='sawtooth';o.frequency.setValueAtTime(80,actx.currentTime);o.frequency.exponentialRampToValueAtTime(2000,actx.currentTime+0.5);o.frequency.exponentialRampToValueAtTime(30,actx.currentTime+0.9);g.gain.setValueAtTime(0.35,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+1);o.start();o.stop(actx.currentTime+1)}catch(e){} }
 
-// Constants
-const MAX_HP = 1000, MAX_SUPER = 100, GRAVITY = 0.55;
-const GROUND_RATIO = 0.74;
+const MAX_HP = 1000, MAX_SUPER = 100, GRAVITY = 0.55, GROUND_RATIO = 0.74;
 
-// Characters
+// ===== CHARACTERS =====
 const CHARACTERS = [
-    { id:'dragon', name:'DRAGON FIST', emoji:'🐉', desc:'Powerful striker', color:'#ff4422', dark:'#cc2211', style:'karate' },
-    { id:'shadow', name:'SHADOW BLADE', emoji:'🗡️', desc:'Fast ninja', color:'#8844ff', dark:'#6622cc', style:'ninja' },
-    { id:'titan', name:'TITAN', emoji:'🦍', desc:'Heavy hitter', color:'#44aaff', dark:'#2288cc', style:'boxing' },
-    { id:'phoenix', name:'PHOENIX', emoji:'🔥', desc:'Agile kicker', color:'#ff6644', dark:'#cc4422', style:'kickboxing' },
-    { id:'cyber', name:'CYBER', emoji:'🤖', desc:'Tech fighter', color:'#44ff88', dark:'#22cc66', style:'cyber' },
-    { id:'oni', name:'ONI', emoji:'👹', desc:'Demon warrior', color:'#cc2244', dark:'#991133', style:'demon' },
+    { id:'dragon', name:'DRAGON FIST', icon:'<i class="fa-solid fa-dragon"></i>', desc:'Karate master', color:'#ff4422', dark:'#cc2211', skin:'#d4a574', style:'karate', hair:'#332211' },
+    { id:'shadow', name:'SHADOW BLADE', icon:'<i class="fa-solid fa-mask"></i>', desc:'Silent ninja', color:'#8844ff', dark:'#6622cc', skin:'#c9a87c', style:'ninja', hair:'#111111' },
+    { id:'titan', name:'TITAN', icon:'<i class="fa-solid fa-fist-raised"></i>', desc:'Power puncher', color:'#44aaff', dark:'#2288cc', skin:'#b8956a', style:'boxing', hair:'#553311' },
+    { id:'phoenix', name:'PHOENIX', icon:'<i class="fa-solid fa-feather"></i>', desc:'Kick specialist', color:'#ff6644', dark:'#cc4422', skin:'#e0b88c', style:'kickboxing', hair:'#884422' },
+    { id:'cyber', name:'CYBER', icon:'<i class="fa-solid fa-robot"></i>', desc:'Tech warrior', color:'#44ff88', dark:'#22cc66', skin:'#c0c0c0', style:'cyber', hair:'#44ff88' },
+    { id:'oni', name:'ONI', icon:'<i class="fa-solid fa-skull"></i>', desc:'Demon warrior', color:'#cc2244', dark:'#991133', skin:'#a06040', style:'demon', hair:'#000000' },
 ];
 
 let gameState = 'menu', difficulty = 'normal', roundsToWin = 2;
 let currentRound = 1, p1Rounds = 0, p2Rounds = 0;
 let frameCount = 0, timeLeft = 99;
-let announceText = '', announceTimer = 0;
-let screenShake = 0;
+let announceText = '', announceTimer = 0, screenShake = 0;
 let particles = [], floatTexts = [];
 let playerChar = 0, enemyChar = 1;
-
-// Virtual Joystick state
 const JOYSTICK = { active: false, touchId: -1, dx: 0, dy: 0, baseX: 0, baseY: 0 };
 const JSTICK_RADIUS = 55;
 
-// ===== CUSTOM BUTTON LAYOUT SYSTEM =====
+// ===== BUTTON LAYOUT =====
 const BUTTON_DEFS = [
-    { id:'btnLP', text:'👊', label:'LP', default:{x:72,y:45,sz:50}, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)' },
-    { id:'btnHP', text:'💥', label:'HP', default:{x:78,y:36,sz:54}, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)' },
-    { id:'btnLK', text:'🦵', label:'LK', default:{x:84,y:45,sz:50}, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)' },
-    { id:'btnHK', text:'🦶', label:'HK', default:{x:78,y:54,sz:54}, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)' },
-    { id:'btnSP', text:'⚡', label:'SP', default:{x:91,y:38,sz:52}, bg:'rgba(255,200,0,0.12)', bd:'rgba(255,200,0,0.3)' },
-    { id:'btnULT', text:'🌟', label:'ULT', default:{x:91,y:52,sz:52}, bg:'rgba(255,68,68,0.12)', bd:'rgba(255,68,68,0.3)' },
-    { id:'btnBlock', text:'🛡️', label:'BLOCK', default:{x:10,y:28,sz:60}, bg:'rgba(68,136,255,0.1)', bd:'rgba(68,136,255,0.25)' },
+    { id:'btnLP', text:'<i class="fa-solid fa-hand-back-fist"></i>', label:'LP', default:{x:72,y:45,sz:50}, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)' },
+    { id:'btnHP', text:'<i class="fa-solid fa-hand-fist"></i>', label:'HP', default:{x:78,y:36,sz:54}, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)' },
+    { id:'btnLK', text:'<i class="fa-solid fa-shoe-prints"></i>', label:'LK', default:{x:84,y:45,sz:50}, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)' },
+    { id:'btnHK', text:'<i class="fa-solid fa-boot"></i>', label:'HK', default:{x:78,y:54,sz:54}, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)' },
+    { id:'btnSP', text:'<i class="fa-solid fa-bolt"></i>', label:'SP', default:{x:91,y:38,sz:52}, bg:'rgba(255,200,0,0.12)', bd:'rgba(255,200,0,0.3)' },
+    { id:'btnULT', text:'<i class="fa-solid fa-star"></i>', label:'ULT', default:{x:91,y:52,sz:52}, bg:'rgba(255,68,68,0.12)', bd:'rgba(255,68,68,0.3)' },
+    { id:'btnBlock', text:'<i class="fa-solid fa-shield"></i>', label:'BLOCK', default:{x:10,y:28,sz:60}, bg:'rgba(68,136,255,0.1)', bd:'rgba(68,136,255,0.25)' },
 ];
 
-function getDefaultLayout() {
-    const l = {};
-    BUTTON_DEFS.forEach(b => { l[b.id] = { x:b.default.x, y:b.default.y, sz:b.default.sz, enabled:true }; });
-    return l;
-}
-
+function getDefaultLayout() { const l={}; BUTTON_DEFS.forEach(b=>{l[b.id]={x:b.default.x,y:b.default.y,sz:b.default.sz,enabled:true};}); return l; }
 let buttonLayout = null;
 function loadButtonLayout() {
     try {
         const saved = localStorage.getItem('lesfight_btns');
         if (saved) {
             const parsed = JSON.parse(saved);
-            // Merge with defaults to handle any new buttons
             const def = getDefaultLayout();
             Object.keys(def).forEach(k => {
                 if (!parsed[k]) parsed[k] = def[k];
                 else { if (parsed[k].x===undefined) parsed[k].x=def[k].x; if (parsed[k].y===undefined) parsed[k].y=def[k].y; if (parsed[k].sz===undefined) parsed[k].sz=def[k].sz; if (parsed[k].enabled===undefined) parsed[k].enabled=true; }
             });
-            buttonLayout = parsed;
-            return parsed;
+            buttonLayout = parsed; return parsed;
         }
     } catch(e) {}
-    buttonLayout = getDefaultLayout();
-    return getDefaultLayout();
+    buttonLayout = getDefaultLayout(); return getDefaultLayout();
 }
-function saveButtonLayout(layout) {
-    buttonLayout = layout;
-    try { localStorage.setItem('lesfight_btns', JSON.stringify(layout)); } catch(e) {}
-}
-function resetButtonLayout() {
-    const def = getDefaultLayout();
-    saveButtonLayout(def);
-    return def;
-}
+function saveButtonLayout(layout) { buttonLayout = layout; try { localStorage.setItem('lesfight_btns', JSON.stringify(layout)); } catch(e) {} }
+function resetButtonLayout() { const def = getDefaultLayout(); saveButtonLayout(def); return def; }
 loadButtonLayout();
 
 // ===== FIGHTER CLASS =====
@@ -382,11 +265,11 @@ class Fighter {
     constructor(x, z, isPlayer, charIdx) {
         this.x = x; this.z = z || 0; this.y = 0;
         this.vx = 0; this.vy = 0; this.vz = 0;
-        this.w = 64; this.h = 130;
+        this.w = 64; this.h = 140;
         this.isPlayer = isPlayer;
         this.charIdx = charIdx || 0;
         const c = CHARACTERS[this.charIdx];
-        this.color = c.color; this.dark = c.dark;
+        this.color = c.color; this.dark = c.dark; this.skin = c.skin; this.hairColor = c.hair;
         this.name = c.name; this.style = c.style;
         this.facingRight = isPlayer;
         this.health = MAX_HP; this.maxHealth = MAX_HP;
@@ -399,7 +282,8 @@ class Fighter {
         this.attackType = ''; this.attackHit = false;
         this.animTime = 0; this.floatY = 0;
         this.wins = 0; this.comboActive = 0;
-        this.yOffset = 0;
+        // Walking animation
+        this.walkCycle = 0;
     }
     get groundY() { return canvas.height * GROUND_RATIO + this.z * 15; }
     get hitbox() {
@@ -418,7 +302,7 @@ class Fighter {
             amount*=0.12; playBlock();
             this.vx = this.facingRight?kb*0.4:-kb*0.4;
             this.hitCount = 0; this.addSuper(2);
-            addFloat(this.x, this.y-60, 'BLOCK!', '#44aaff', 0.7);
+            addFloat(this.x, this.y-60, '<i class="fa-solid fa-shield-halved"></i> BLOCK!', '#44aaff', 0.7);
             return amount>0;
         }
         this.state='hit'; this.stateTimer=14;
@@ -448,8 +332,8 @@ class Fighter {
     }
     attack(type) {
         if(this.attackCooldown>0||this.state==='hit'||this.state==='knocked') return;
-        if(type==='special'&&this.superMeter<30){addFloat(this.x,this.y-50,'NOT ENOUGH!','#ff4444',0.6);return;}
-        if(type==='ultimate'&&this.superMeter<100){addFloat(this.x,this.y-50,'NOT ENOUGH!','#ff4444',0.6);return;}
+        if(type==='special'&&this.superMeter<30){addFloat(this.x,this.y-50,'<i class="fa-solid fa-circle-exclamation"></i> NOT ENOUGH!','#ff4444',0.6);return;}
+        if(type==='ultimate'&&this.superMeter<100){addFloat(this.x,this.y-50,'<i class="fa-solid fa-circle-exclamation"></i> NOT ENOUGH!','#ff4444',0.6);return;}
         this.state='attacking'; this.stateTimer=18; this.attackType=type; this.attackHit=false;
         this.attackCooldown = type==='light'?10:type==='heavy'?20:type==='kick'?14:type==='special'?28:38;
         if(type==='special'){this.superMeter-=30;playSpecial();}
@@ -472,82 +356,361 @@ class Fighter {
         else if(this.state==='hit')this.floatY=Math.sin(Date.now()*0.06)*5;
         else this.floatY=Math.sin(this.animTime*4)*2;
         if(opp&&this.state!=='knocked')this.facingRight=opp.x>this.x;
+        // Walk cycle
+        if(this.state==='walking') this.walkCycle += dt * 8;
+        else this.walkCycle *= 0.9;
         if(this.state!=='blocking')this.stamina=Math.min(100,this.stamina+0.15);
         else {this.stamina-=0.4;if(this.stamina<=0){this.stamina=0;this.blockPressed=false;}}
         if(this.blockPressed && this.state!=='attacking' && this.state!=='hit' && this.state!=='knocked') this.state='blocking';
         else if(this.state==='blocking' && !this.blockPressed && this.stateTimer<=0) this.state='idle';
         if(this.state==='idle')this.addSuper(0.015);
     }
+
+    // ===== DETAILED HUMAN DRAWING =====
     draw(ctx) {
-        const pulse = this.invulnerable&&Math.floor(Date.now()/80)%2===0;
-        if(pulse)ctx.globalAlpha=0.4;
+        const pulse = this.invulnerable && Math.floor(Date.now()/80)%2===0;
+        if(pulse) ctx.globalAlpha = 0.4;
         const scale = 1 + this.z * 0.06;
         ctx.save();
-        ctx.translate(this.x, this.y+this.floatY);
+        ctx.translate(this.x, this.y + this.floatY);
         ctx.scale(scale, scale);
-        const d = this.facingRight?1:-1;
+        const d = this.facingRight ? 1 : -1;
+        
+        // Shadow on ground
         ctx.fillStyle='rgba(0,0,0,'+(0.2+this.z*0.03)+')';
-        ctx.beginPath();ctx.ellipse(0,3,22+this.z*2,5+this.z*0.5,0,0,Math.PI*2);ctx.fill();
-        const col = this.state==='hit'?'#ffaa00':this.color;
-        const dk = this.dark;
-        ctx.strokeStyle=dk; ctx.lineWidth=9; ctx.lineCap='round';
-        const legS = this.state==='walking'?Math.sin(this.animTime*4):0;
-        ctx.beginPath();ctx.moveTo(-5,-32);ctx.lineTo(-8+legS*6,-4);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(5,-32);ctx.lineTo(8-legS*6,-4);ctx.stroke();
-        ctx.fillStyle='#222';ctx.fillRect(-12+legS*5,-4,10,5);ctx.fillRect(5-legS*5,-4,10,5);
-        ctx.fillStyle=col;
-        ctx.beginPath();ctx.moveTo(-16*d,-72);ctx.lineTo(16*d,-72);ctx.lineTo(18*d,-38);ctx.lineTo(-18*d,-38);ctx.closePath();ctx.fill();
-        ctx.fillStyle=dk;ctx.fillRect(-8*d,-66,16,4);
-        ctx.fillStyle='#222';ctx.fillRect(-17*d,-40,34,5);
-        ctx.fillStyle='#ffcc00';ctx.fillRect(-3,-38,6,3);
-        ctx.fillStyle='#e8c4a0';ctx.fillRect(-4,-78,8,8);
-        ctx.fillStyle='#e8c4a0';ctx.beginPath();ctx.arc(0,-86,15,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle=this.isPlayer?'#332211':'#111';
-        if(this.style==='ninja'){ctx.fillRect(-16,-100,32,10);ctx.fillRect(-14,-98,28,12);}
-        else if(this.style==='demon'){ctx.beginPath();ctx.moveTo(-15,-90);ctx.lineTo(-25,-110);ctx.lineTo(-5,-98);ctx.closePath();ctx.fill();
-            ctx.beginPath();ctx.moveTo(15,-90);ctx.lineTo(25,-110);ctx.lineTo(5,-98);ctx.closePath();ctx.fill();}
-        else if(this.style==='cyber'){ctx.fillStyle='#44ff88';ctx.fillRect(-16,-100,32,4);ctx.fillRect(-12,-96,24,2);}
-        else{ctx.fillRect(-16,-100,32,12);}
-        ctx.fillStyle='#222';const eyeX=4*d;
-        ctx.fillRect(eyeX-3,-88,3,3);ctx.fillRect(eyeX+4,-88,3,3);
-        ctx.strokeStyle='#222';ctx.lineWidth=1.5;
-        ctx.beginPath();ctx.moveTo(eyeX-5,-92);ctx.lineTo(eyeX-1,-91);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(eyeX+5,-91);ctx.lineTo(eyeX+9,-92);ctx.stroke();
-        ctx.fillStyle='#c44';
-        if(this.state==='hit'||this.state==='knocked'){ctx.beginPath();ctx.arc(0,-79,3,0,Math.PI);ctx.fill();}
-        else{ctx.fillRect(-3,-80,6,2);}
-        ctx.fillStyle=dk;ctx.fillRect(-15,-95,30,4);ctx.fillRect(-15-d*3,-95,8,14);
-        ctx.strokeStyle='#e8c4a0';ctx.lineWidth=7;
-        const armSwing=Math.sin(this.animTime*0.5)*3;
-        if(this.state==='attacking'){
-            const p=1-this.stateTimer/18;let sA=-0.2,eA=-2;
-            if(this.attackType==='light'){sA=0;eA=-2.5;}else if(this.attackType==='heavy'){sA=0.3;eA=-2.8;}
-            else if(this.attackType==='kick'){sA=-0.5;eA=-1.5;}else if(this.attackType==='special'){sA=0;eA=-3;}
-            else if(this.attackType==='ultimate'){sA=0.5;eA=-3.2;}
-            const a=sA+(eA-sA)*Math.min(1,p*2);const r=15+Math.abs(a)*10;
-            ctx.beginPath();const hX=Math.cos(a)*r*d,hY=-55+Math.sin(a)*r;
-            ctx.moveTo(10*d,-58);ctx.lineTo(hX,hY);ctx.stroke();
-            if(p>0.15&&p<0.6){ctx.fillStyle='#e8c4a0';ctx.beginPath();ctx.arc(hX,hY,5,0,Math.PI*2);ctx.fill();
-                ctx.fillStyle='#ffcc00';ctx.beginPath();ctx.arc(hX+Math.random()*6-3,hY+Math.random()*6-3,5+Math.random()*4,0,Math.PI*2);ctx.fill();}
-            if(this.attackType==='special'&&p>0.2&&p<0.7){const g=ctx.createRadialGradient(0,-50,0,0,-50,30);
-                g.addColorStop(0,'rgba(255,255,255,0.8)');g.addColorStop(0.5,'rgba(255,200,0,0.4)');g.addColorStop(1,'rgba(255,100,0,0)');
-                ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,-50,30,0,Math.PI*2);ctx.fill();}
-            if(this.attackType==='ultimate'){const rad=25+Math.random()*10;const g=ctx.createRadialGradient(0,-50,0,0,-50,rad);
-                g.addColorStop(0,'rgba(255,255,255,0.9)');g.addColorStop(0.3,'rgba(255,200,50,0.5)');
-                g.addColorStop(0.6,'rgba(255,50,50,0.3)');g.addColorStop(1,'rgba(255,0,0,0)');
-                ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,-50,rad,0,Math.PI*2);ctx.fill();}
-        } else if(this.state==='blocking'){
-            ctx.beginPath();ctx.moveTo(10*d,-58);ctx.lineTo(16*d,-78);ctx.stroke();
-            ctx.strokeStyle='rgba(68,136,255,0.3)';ctx.lineWidth=2;
-            ctx.beginPath();ctx.arc(0,-65,18,0,Math.PI*2);ctx.stroke();
-        } else if(this.state==='hit'||this.state==='knocked'){
-            ctx.beginPath();ctx.moveTo(10*d,-58);ctx.lineTo(15*d*Math.sin(Date.now()*0.03),-48);ctx.stroke();
-        } else {ctx.beginPath();ctx.moveTo(10*d,-58);ctx.lineTo(15*d,-48+armSwing);ctx.stroke();}
-        ctx.strokeStyle='#e8c4a0';ctx.lineWidth=6;
-        if(this.state==='blocking'){ctx.beginPath();ctx.moveTo(-8*d,-55);ctx.lineTo(-14*d,-78);ctx.stroke();}
-        else{ctx.beginPath();ctx.moveTo(-8*d,-55);ctx.lineTo(-13*d,-45-armSwing);ctx.stroke();}
-        ctx.restore();ctx.globalAlpha=1;
+        ctx.beginPath(); ctx.ellipse(0, 3, 24+this.z*2, 6+this.z*0.5, 0, 0, Math.PI*2); ctx.fill();
+        
+        const skin = this.state==='hit' ? '#ffcc88' : this.skin;
+        const main = this.state==='hit' ? '#ffaa00' : this.color;
+        const dark = this.dark;
+        const legAnim = Math.sin(this.walkCycle);
+        
+        // ===== LEGS =====
+        // Back leg
+        ctx.save();
+        const bkLegSwing = legAnim * 8;
+        ctx.translate(-5 * d, -38);
+        // Thigh
+        const thighGrad = ctx.createLinearGradient(0, 0, 8*d, 0);
+        thighGrad.addColorStop(0, dark); thighGrad.addColorStop(0.5, main); thighGrad.addColorStop(1, dark);
+        ctx.fillStyle = thighGrad;
+        ctx.beginPath(); ctx.ellipse(3*d, -8, 7, 14, 0, 0, Math.PI*2); ctx.fill();
+        // Calf
+        ctx.translate(bkLegSwing*0.3, -8);
+        const calfGrad = ctx.createLinearGradient(0, 0, 6*d, 0);
+        calfGrad.addColorStop(0, dark); calfGrad.addColorStop(0.5, main); calfGrad.addColorStop(1, dark);
+        ctx.fillStyle = calfGrad;
+        ctx.beginPath(); ctx.ellipse(2*d, -12, 6, 12, 0, 0, Math.PI*2); ctx.fill();
+        // Shoe
+        ctx.fillStyle = '#333';
+        ctx.beginPath(); ctx.ellipse(1*d, -23, 7, 5, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#555';
+        ctx.fillRect(-3*d, -25, 8, 3);
+        ctx.restore();
+        
+        // Front leg
+        ctx.save();
+        const fLegSwing = legAnim * 8;
+        ctx.translate(5 * d, -38);
+        const thighGrad2 = ctx.createLinearGradient(0, 0, 8*d, 0);
+        thighGrad2.addColorStop(0, dark); thighGrad2.addColorStop(0.4, main); thighGrad2.addColorStop(1, dark);
+        ctx.fillStyle = thighGrad2;
+        ctx.beginPath(); ctx.ellipse(-2*d, -8, 7, 14, 0, 0, Math.PI*2); ctx.fill();
+        ctx.translate(fLegSwing*0.3, -8);
+        const calfGrad2 = ctx.createLinearGradient(0, 0, 6*d, 0);
+        calfGrad2.addColorStop(0, dark); calfGrad2.addColorStop(0.4, main); calfGrad2.addColorStop(1, dark);
+        ctx.fillStyle = calfGrad2;
+        ctx.beginPath(); ctx.ellipse(-1*d, -12, 6, 12, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#333';
+        ctx.beginPath(); ctx.ellipse(-2*d, -23, 7, 5, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#555';
+        ctx.fillRect(-4*d, -25, 8, 3);
+        ctx.restore();
+
+        // ===== HIPS / WAIST =====
+        const hipGrad = ctx.createLinearGradient(-12*d, 0, 12*d, 0);
+        const hipCol = this.style==='ninja'?'#1a1a2e':this.style==='cyber'?'#333355':dark;
+        hipGrad.addColorStop(0, hipCol); hipGrad.addColorStop(0.5, main); hipGrad.addColorStop(1, hipCol);
+        ctx.fillStyle = hipGrad;
+        ctx.beginPath(); ctx.ellipse(0, -42, 13, 8, 0, 0, Math.PI*2); ctx.fill();
+        // Belt
+        ctx.fillStyle = '#222';
+        ctx.fillRect(-10*d, -46, 20, 3);
+        if(this.style==='karate') { ctx.fillStyle = '#fff'; ctx.fillRect(-1, -46, 2, 6); }
+
+        // ===== TORSO =====
+        ctx.save();
+        ctx.translate(0, -52);
+        // Chest - muscular shape
+        const chestGrad = ctx.createLinearGradient(-14*d, 0, 14*d, 0);
+        chestGrad.addColorStop(0, dark); chestGrad.addColorStop(0.3, main); chestGrad.addColorStop(0.7, main); chestGrad.addColorStop(1, dark);
+        ctx.fillStyle = chestGrad;
+        ctx.beginPath();
+        ctx.moveTo(-14*d, 0);
+        ctx.quadraticCurveTo(-16*d, -20, -12*d, -30);
+        ctx.lineTo(12*d, -30);
+        ctx.quadraticCurveTo(16*d, -20, 14*d, 0);
+        ctx.closePath(); ctx.fill();
+        
+        // Chest highlight
+        const chestHi = ctx.createLinearGradient(0, -5, 0, -25);
+        chestHi.addColorStop(0, 'rgba(255,255,255,0.15)'); chestHi.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = chestHi;
+        ctx.beginPath();
+        ctx.moveTo(-8*d, -5); ctx.quadraticCurveTo(-10*d, -20, -6*d, -28);
+        ctx.lineTo(6*d, -28); ctx.quadraticCurveTo(10*d, -20, 8*d, -5);
+        ctx.closePath(); ctx.fill();
+
+        // Abs definition
+        if(this.style!=='cyber'&&this.style!=='ninja') {
+            ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
+            for(let i=0; i<4; i++) {
+                ctx.beginPath(); ctx.moveTo(-5*d, -8 - i*5); ctx.lineTo(5*d, -8 - i*5); ctx.stroke();
+            }
+            ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(0, -25); ctx.stroke();
+        }
+
+        // ===== ARMS =====
+        const armSwing = Math.sin(this.animTime * 0.5) * 3;
+        
+        // Back arm
+        ctx.save();
+        ctx.translate(-10*d, -8);
+        const bicepGrad = ctx.createLinearGradient(0, 0, 6*d, 0);
+        bicepGrad.addColorStop(0, dark); bicepGrad.addColorStop(0.5, skin); bicepGrad.addColorStop(1, dark);
+        ctx.fillStyle = bicepGrad;
+        ctx.beginPath(); ctx.ellipse(0, -6, 5, 10, 0.2*d, 0, Math.PI*2); ctx.fill();
+        ctx.translate(bkLegSwing*0.15, -6);
+        const foreGrad = ctx.createLinearGradient(0, 0, 5*d, 0);
+        foreGrad.addColorStop(0, dark); foreGrad.addColorStop(0.5, skin); foreGrad.addColorStop(1, dark);
+        ctx.fillStyle = foreGrad;
+        ctx.beginPath(); ctx.ellipse(0, -10, 4, 10, 0, 0, Math.PI*2); ctx.fill();
+        // Glove
+        ctx.fillStyle = this.style==='boxing'?'#ff2222':this.style==='cyber'?'#44ff88':'#eee';
+        ctx.beginPath(); ctx.arc(0, -18, 5, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+
+        // Front arm
+        ctx.save();
+        ctx.translate(10*d, -8);
+        let armAngle = 0;
+        if(this.state==='attacking') {
+            const p = 1 - this.stateTimer/18;
+            if(this.attackType==='light') armAngle = -1.5 - p*1.2;
+            else if(this.attackType==='heavy') armAngle = -1.8 - p*1.5;
+            else if(this.attackType==='kick') armAngle = -0.5;
+            else if(this.attackType==='special') armAngle = -2 - p*2;
+            else if(this.attackType==='ultimate') armAngle = -2.5 - p*2.2;
+        } else if(this.state==='blocking') {
+            armAngle = -2.2;
+        } else {
+            armAngle = -0.3 - armSwing*0.2;
+        }
+        
+        const armLen = 18;
+        const endX = Math.sin(armAngle) * armLen * d;
+        const endY = Math.cos(Math.abs(armAngle)) * armLen;
+        
+        // Upper arm
+        const uaGrad = ctx.createLinearGradient(0, 0, 6*d, 0);
+        uaGrad.addColorStop(0, dark); uaGrad.addColorStop(0.4, skin); uaGrad.addColorStop(1, dark);
+        ctx.fillStyle = uaGrad;
+        ctx.beginPath(); ctx.ellipse(0, -6, 6, 11, 0.2*d, 0, Math.PI*2); ctx.fill();
+        
+        // Lower arm pointing toward attack direction
+        ctx.translate(endX*0.35, -6 + endY*0.35);
+        const laGrad = ctx.createLinearGradient(0, 0, 5*d, 0);
+        laGrad.addColorStop(0, dark); laGrad.addColorStop(0.4, skin); laGrad.addColorStop(1, dark);
+        ctx.fillStyle = laGrad;
+        const laAngle = Math.atan2(endX, -endY);
+        ctx.beginPath(); ctx.ellipse(0, -7, 5, 10, laAngle, 0, Math.PI*2); ctx.fill();
+        
+        // Fist/glove
+        if(this.state==='attacking') {
+            ctx.fillStyle = '#ffcc00';
+            const glow = ctx.createRadialGradient(0, -15, 0, 0, -15, 12);
+            glow.addColorStop(0, 'rgba(255,200,0,0.4)'); glow.addColorStop(1, 'rgba(255,200,0,0)');
+            ctx.fillStyle = glow;
+            ctx.beginPath(); ctx.arc(0, -15, 12, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.fillStyle = this.style==='boxing'?'#ff2222':this.style==='cyber'?'#44ff88':'#eee';
+        ctx.beginPath(); ctx.arc(0, -14, 6, 0, Math.PI*2); ctx.fill();
+        if(this.state==='attacking'&&(this.attackType==='special'||this.attackType==='ultimate')) {
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.beginPath(); ctx.arc(0, -14, 8, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.restore();
+
+        // ===== SHOULDERS =====
+        ctx.fillStyle = dark;
+        ctx.beginPath();
+        ctx.moveTo(-14*d, -30); ctx.quadraticCurveTo(-18*d, -32, -16*d, -26); ctx.lineTo(-14*d, -28); ctx.closePath(); ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(14*d, -30); ctx.quadraticCurveTo(18*d, -32, 16*d, -26); ctx.lineTo(14*d, -28); ctx.closePath(); ctx.fill();
+
+        // ===== NECK =====
+        ctx.fillStyle = skin;
+        ctx.fillRect(-4*d, -36, 8, 6);
+        // Adams apple detail
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        ctx.beginPath(); ctx.ellipse(0, -33, 3, 2, 0, 0, Math.PI*2); ctx.fill();
+
+        // ===== HEAD =====
+        ctx.save();
+        ctx.translate(0, -40);
+        // Head shape
+        const headGrad = ctx.createRadialGradient(-3*d, -5, 0, -3*d, -5, 16);
+        headGrad.addColorStop(0, lighten(skin, 30)); headGrad.addColorStop(0.7, skin); headGrad.addColorStop(1, darken(skin, 20));
+        ctx.fillStyle = headGrad;
+        ctx.beginPath();
+        ctx.moveTo(-14*d, 0);
+        ctx.quadraticCurveTo(-16*d, -12, -12*d, -20);
+        ctx.quadraticCurveTo(-8*d, -26, 0, -26);
+        ctx.quadraticCurveTo(8*d, -26, 12*d, -20);
+        ctx.quadraticCurveTo(16*d, -12, 14*d, 0);
+        ctx.quadraticCurveTo(0, 4, -14*d, 0);
+        ctx.closePath(); ctx.fill();
+
+        // Jaw line
+        ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-12*d, -2); ctx.quadraticCurveTo(0, 3, 12*d, -2);
+        ctx.stroke();
+
+        // ===== FACIAL FEATURES =====
+        // Eyes
+        const eyeY = -12, eyeSpacing = 5;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.ellipse((-eyeSpacing-1)*d, eyeY, 4, 3, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse((eyeSpacing-1)*d, eyeY, 4, 3, 0, 0, Math.PI*2); ctx.fill();
+        // Iris
+        ctx.fillStyle = this.style==='cyber'?'#44ff88':this.style==='demon'?'#ff2222':'#442211';
+        ctx.beginPath(); ctx.arc((-eyeSpacing-1)*d, eyeY, 2.5, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc((eyeSpacing-1)*d, eyeY, 2.5, 0, Math.PI*2); ctx.fill();
+        // Pupil
+        ctx.fillStyle = '#000';
+        ctx.beginPath(); ctx.arc((-eyeSpacing-1)*d, eyeY, 1.2, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc((eyeSpacing-1)*d, eyeY, 1.2, 0, Math.PI*2); ctx.fill();
+        // Eye shine
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath(); ctx.arc((-eyeSpacing)*d, eyeY-1, 0.8, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc((eyeSpacing)*d, eyeY-1, 0.8, 0, Math.PI*2); ctx.fill();
+
+        // Eyebrows
+        ctx.strokeStyle = this.hairColor; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo((-eyeSpacing-4)*d, eyeY-5); ctx.lineTo((-eyeSpacing+2)*d, eyeY-4); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo((eyeSpacing-2)*d, eyeY-4); ctx.lineTo((eyeSpacing+4)*d, eyeY-5); ctx.stroke();
+
+        // Nose
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(-1*d, -10); ctx.lineTo(-1*d, -6); ctx.lineTo(1*d, -6); ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
+        ctx.beginPath(); ctx.ellipse(1*d, -5, 2, 1.5, 0, 0, Math.PI*2); ctx.fill();
+
+        // Mouth
+        if(this.state==='hit'||this.state==='attacking') {
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.ellipse(0, -1, 4, 3, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#a22';
+            ctx.beginPath(); ctx.ellipse(0, -1, 3, 2, 0, 0, Math.PI*2); ctx.fill();
+        } else {
+            ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(0, -2, 4, 0.1, Math.PI-0.1); ctx.stroke();
+        }
+
+        // ===== HAIR =====
+        ctx.fillStyle = this.hairColor;
+        if(this.style==='ninja') {
+            // Ninja headband + hair
+            ctx.fillRect(-14*d, -26, 28, 5);
+            ctx.fillStyle = '#222'; ctx.fillRect(-14*d, -28, 28, 3);
+            // Headband tails
+            ctx.fillRect(-14*d, -26, -4, -8);
+            ctx.fillRect(14*d, -26, 4, -6);
+        } else if(this.style==='demon') {
+            // Wild spiky hair
+            ctx.beginPath(); ctx.moveTo(-14*d, -20);
+            for(let i=0; i<6; i++) ctx.lineTo((-14+i*6)*d, -28-Math.random()*6);
+            ctx.closePath(); ctx.fill();
+            // Horns
+            ctx.fillStyle = '#444';
+            ctx.beginPath(); ctx.moveTo(-10*d, -24); ctx.lineTo(-14*d, -36); ctx.lineTo(-7*d, -24); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(10*d, -24); ctx.lineTo(14*d, -36); ctx.lineTo(7*d, -24); ctx.closePath(); ctx.fill();
+        } else if(this.style==='cyber') {
+            // Cyber mohawk
+            ctx.fillStyle = '#44ff88';
+            ctx.fillRect(-3*d, -32, 6, 8);
+            ctx.fillStyle = '#88ffbb';
+            ctx.fillRect(-2*d, -34, 4, 4);
+        } else if(this.style==='boxing') {
+            // Short curly hair
+            ctx.beginPath(); ctx.arc(0, -24, 14, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = darken(this.hairColor, 20);
+            ctx.fillRect(-12*d, -28, 24, 3);
+        } else if(this.style==='kickboxing') {
+            // Flowing back hair
+            ctx.fillRect(-14*d, -26, 28, 6);
+            ctx.fillRect(-12*d, -24, 24, 4);
+            // Ponytail
+            ctx.save(); ctx.translate(0, -20);
+            ctx.fillRect(-2*d, 0, 4, 10);
+            ctx.fillRect(-3*d, 8, 6, 4);
+            ctx.restore();
+        } else {
+            // Default: spiky martial arts hair
+            ctx.beginPath(); ctx.moveTo(-14*d, -20);
+            for(let i=0; i<8; i++) ctx.lineTo((-14+i*4)*d, -28-Math.sin(i*1.2)*3);
+            ctx.closePath(); ctx.fill();
+            // Headband
+            ctx.fillStyle = this.color;
+            ctx.fillRect(-14*d, -24, 28, 3);
+        }
+
+        // ===== CLOTHING DETAILS =====
+        if(this.style==='karate') {
+            // Karate gi top
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(-3*d, -35); ctx.lineTo(-3*d, -20); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(3*d, -35); ctx.lineTo(3*d, -20); ctx.stroke();
+            // Belt knot
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(-3, -45, 6, 3);
+        }
+        if(this.style==='boxing') {
+            // Boxing trunks
+            ctx.fillStyle = this.color;
+            ctx.fillRect(-12*d, -44, 24, 6);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(-1, -44, 2, 6);
+        }
+        if(this.style==='cyber') {
+            // Cyber armor lines
+            ctx.strokeStyle = 'rgba(68,255,136,0.3)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(-8*d, -10); ctx.lineTo(-8*d, -40); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(8*d, -10); ctx.lineTo(8*d, -40); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-5*d, -20); ctx.lineTo(5*d, -20); ctx.stroke();
+            // Glowing dots
+            ctx.fillStyle = '#44ff88';
+            ctx.beginPath(); ctx.arc(-8*d, -15, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(8*d, -15, 1.5, 0, Math.PI*2); ctx.fill();
+        }
+        if(this.style==='demon') {
+            // Face paint markings
+            ctx.strokeStyle = 'rgba(255,0,0,0.3)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(-10*d, -2); ctx.lineTo(-6*d, -5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(10*d, -2); ctx.lineTo(6*d, -5); ctx.stroke();
+        }
+        if(this.style==='ninja') {
+            // Ninja suit v-neck
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath(); ctx.moveTo(0, -32); ctx.lineTo(-6*d, -22); ctx.lineTo(6*d, -22); ctx.closePath(); ctx.fill();
+        }
+        
+        ctx.restore(); // head
+        ctx.restore(); // main
+        ctx.globalAlpha = 1;
     }
+
     reset(x, z) {
         this.x = x; this.z = z || 0; this.y = 0;
         this.vx = 0; this.vy = 0; this.vz = 0;
@@ -555,11 +718,23 @@ class Fighter {
         this.grounded = false; this.state = 'idle'; this.stateTimer = 0;
         this.attackCooldown = 0; this.blockPressed = false;
         this.hitCount = 0; this.invulnerable = false; this.invulnTimer = 0;
-        this.attackHit = false;
+        this.attackHit = false; this.walkCycle = 0;
     }
 }
 
-// AI
+// ===== COLOR HELPERS =====
+function lighten(hex, amt) {
+    let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    r=Math.min(255,r+amt); g=Math.min(255,g+amt); b=Math.min(255,b+amt);
+    return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function darken(hex, amt) {
+    let r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    r=Math.max(0,r-amt); g=Math.max(0,g-amt); b=Math.max(0,b-amt);
+    return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+// ===== AI =====
 class AI {
     constructor() { this.timer=0; }
     setDiff(d) { switch(d){case'easy':this.react=0.5;this.aggr=0.2;this.blockChance=0.08;this.comboChance=0.1;break;
@@ -598,6 +773,7 @@ function initGame() {
     enemy = new Fighter(canvas.width*0.67, 0, false, enemyChar);
     enemy.color=CHARACTERS[enemyChar].color; enemy.dark=CHARACTERS[enemyChar].dark;
     enemy.name=CHARACTERS[enemyChar].name; enemy.style=CHARACTERS[enemyChar].style;
+    enemy.skin=CHARACTERS[enemyChar].skin; enemy.hairColor=CHARACTERS[enemyChar].hair;
     ai=new AI();ai.setDiff(difficulty);
     currentRound=1;p1Rounds=0;p2Rounds=0;
     particles=[];floatTexts=[];
@@ -647,416 +823,176 @@ function checkHit(atk,def){
     }
 }
 
-// ===== VIRTUAL JOYSTICK =====
+// ===== JOYSTICK =====
 let joystickCreated = false;
 function setupJoystick() {
     if (joystickCreated) return;
     const container = document.getElementById('gameContainer');
     const zone = document.createElement('div');
     zone.id = 'joystickZone';
-    zone.innerHTML = `<div id="joystickKnob" style="width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.3),rgba(255,255,255,0.1));border:1px solid rgba(255,255,255,0.2);position:absolute;pointer-events:none;"></div>
-    <div id="joystickLabel" style="position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:2px;white-space:nowrap;pointer-events:none;">MOVE</div>`;
+    zone.innerHTML = '<div id="joystickKnob"></div><div id="joystickLabel">MOVE</div>';
     container.appendChild(zone);
     const knob = document.getElementById('joystickKnob');
     function handleStart(touch) {
-        initAudio();
-        JOYSTICK.active = true;
-        JOYSTICK.touchId = touch.identifier;
+        initAudio(); JOYSTICK.active = true; JOYSTICK.touchId = touch.identifier;
         const rect = zone.getBoundingClientRect();
-        JOYSTICK.baseX = rect.left + rect.width/2;
-        JOYSTICK.baseY = rect.top + rect.height/2;
+        JOYSTICK.baseX = rect.left + rect.width/2; JOYSTICK.baseY = rect.top + rect.height/2;
         handleMove(touch);
     }
     function handleMove(touch) {
         if (!JOYSTICK.active) return;
-        const dx = touch.clientX - JOYSTICK.baseX;
-        const dy = touch.clientY - JOYSTICK.baseY;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        const maxDist = JSTICK_RADIUS;
-        let clampedDist = Math.min(dist, maxDist);
-        let angle = Math.atan2(dy, dx);
+        const dx = touch.clientX - JOYSTICK.baseX, dy = touch.clientY - JOYSTICK.baseY;
+        const dist = Math.sqrt(dx*dx + dy*dy); const maxDist = JSTICK_RADIUS;
+        let clampedDist = Math.min(dist, maxDist); let angle = Math.atan2(dy, dx);
         JOYSTICK.dx = Math.cos(angle) * (clampedDist / maxDist);
         JOYSTICK.dy = Math.sin(angle) * (clampedDist / maxDist);
         const mag = Math.sqrt(JOYSTICK.dx*JOYSTICK.dx + JOYSTICK.dy*JOYSTICK.dy);
         if (mag > 1) { JOYSTICK.dx /= mag; JOYSTICK.dy /= mag; }
-        knob.style.transform = `translate(${JOYSTICK.dx * maxDist}px, ${JOYSTICK.dy * maxDist}px)`;
+        knob.style.transform = 'translate('+(JOYSTICK.dx*maxDist)+'px,'+(JOYSTICK.dy*maxDist)+'px)';
     }
     function handleEnd(touch) {
         if (!touch || touch.identifier === JOYSTICK.touchId) {
-            JOYSTICK.active = false;
-            JOYSTICK.dx = 0; JOYSTICK.dy = 0;
-            JOYSTICK.touchId = -1;
-            knob.style.transform = 'translate(0px, 0px)';
+            JOYSTICK.active = false; JOYSTICK.dx = 0; JOYSTICK.dy = 0;
+            JOYSTICK.touchId = -1; knob.style.transform = 'translate(0px, 0px)';
         }
     }
-    zone.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e.changedTouches[0]); }, {passive:false});
-    zone.addEventListener('touchmove', (e) => { e.preventDefault(); for(let t of e.changedTouches) { if(t.identifier === JOYSTICK.touchId) handleMove(t); } }, {passive:false});
-    zone.addEventListener('touchend', (e) => { e.preventDefault(); handleEnd(e.changedTouches[0]); }, {passive:false});
-    zone.addEventListener('touchcancel', (e) => { e.preventDefault(); handleEnd(); }, {passive:false});
+    zone.addEventListener('touchstart', e=>{e.preventDefault();handleStart(e.changedTouches[0]);},{passive:false});
+    zone.addEventListener('touchmove', e=>{e.preventDefault();for(let t of e.changedTouches){if(t.identifier===JOYSTICK.touchId)handleMove(t);}},{passive:false});
+    zone.addEventListener('touchend', e=>{e.preventDefault();handleEnd(e.changedTouches[0]);},{passive:false});
+    zone.addEventListener('touchcancel', e=>{e.preventDefault();handleEnd();},{passive:false});
     joystickCreated = true;
 }
 
-// ===== ACTION BUTTONS (reads from layout) =====
+// ===== ACTION BUTTONS =====
 let controlsCreated = false;
 function setupActionButtons() {
     if (controlsCreated) return;
     const container = document.getElementById('gameContainer');
     const isMobile = 'ontouchstart' in window;
-    
     BUTTON_DEFS.forEach(cfg => {
         const layout = buttonLayout[cfg.id];
         if (!layout || !layout.enabled) return;
         const sz = layout.sz || cfg.default.sz;
         const btn = document.createElement('div');
-        btn.className = 'ctrl-btn';
-        btn.id = cfg.id;
+        btn.className = 'ctrl-btn'; btn.id = cfg.id;
         const fontSize = sz > 52 ? '22px' : sz > 44 ? '18px' : '14px';
-        btn.innerHTML = `<span style="font-size:${fontSize}">${cfg.text}</span><span class="lbl">${cfg.label}</span>`;
-        btn.style.cssText = `
-            width:${sz}px;height:${cfg.id==='btnBlock' ? sz*0.7+'px' : sz+'px'};
-            background:${cfg.bg};border:1px solid ${cfg.bd};
-            bottom:${layout.y}%;${layout.x<50?'left':'right'}:${layout.x>=50?100-layout.x:layout.x}%;
-        `;
-        if (cfg.id === 'btnBlock') {
-            btn.style.borderRadius = '12px';
-        } else {
-            btn.style.borderRadius = '50%';
-        }
-        const onDown = (e) => { e.preventDefault(); btn.style.transform = 'scale(0.88)';
-            btn.style.background = cfg.bg.replace('0.08','0.25').replace('0.1','0.3').replace('0.12','0.3');
-            btnDown(cfg.id); };
-        const onUp = (e) => { e.preventDefault(); btn.style.transform = 'scale(1)'; btn.style.background = cfg.bg; btnUp(cfg.id); };
-        btn.addEventListener('touchstart', onDown, {passive:false});
-        btn.addEventListener('touchend', onUp, {passive:false});
-        btn.addEventListener('touchcancel', onUp, {passive:false});
-        if(!isMobile) {
-            btn.addEventListener('mousedown', onDown);
-            btn.addEventListener('mouseup', onUp);
-            btn.addEventListener('mouseleave', onUp);
-        }
+        btn.innerHTML = '<span style="font-size:'+fontSize+'">'+cfg.text+'</span><span class="lbl">'+cfg.label+'</span>';
+        btn.style.cssText = 'width:'+sz+'px;height:'+(cfg.id==='btnBlock'?sz*0.7+'px':sz+'px')+';background:'+cfg.bg+';border:1px solid '+cfg.bd+';bottom:'+layout.y+'%;'+(layout.x<50?'left':'right')+':'+(layout.x>=50?100-layout.x:layout.x)+'%;';
+        btn.style.borderRadius = cfg.id==='btnBlock' ? '12px' : '50%';
+        const onDown = e=>{e.preventDefault();btn.style.transform='scale(0.88)';btn.style.background=cfg.bg.replace('0.08','0.25').replace('0.1','0.3').replace('0.12','0.3');btnDown(cfg.id);};
+        const onUp = e=>{e.preventDefault();btn.style.transform='scale(1)';btn.style.background=cfg.bg;btnUp(cfg.id);};
+        btn.addEventListener('touchstart',onDown,{passive:false});
+        btn.addEventListener('touchend',onUp,{passive:false});btn.addEventListener('touchcancel',onUp,{passive:false});
+        if(!isMobile){btn.addEventListener('mousedown',onDown);btn.addEventListener('mouseup',onUp);btn.addEventListener('mouseleave',onUp);}
         container.appendChild(btn);
     });
     controlsCreated = true;
 }
 
-const TOUCH = {block: false};
+const TD = {block:false};
 function btnDown(id) {
-    if(gameState!=='fight') return;
-    initAudio();
+    if(gameState!=='fight') return; initAudio();
     switch(id) {
-        case'btnBlock': TOUCH.block=true; player.blockPressed=true; break;
-        case'btnLP': player.attack('light'); break;
-        case'btnHP': player.attack('heavy'); break;
-        case'btnLK': player.attack('kick'); break;
-        case'btnHK': player.attack('heavy'); break;
-        case'btnSP': player.attack('special'); break;
-        case'btnULT': player.attack('ultimate'); break;
+        case'btnBlock': TD.block=true;player.blockPressed=true;break;
+        case'btnLP':player.attack('light');break;case'btnHP':player.attack('heavy');break;
+        case'btnLK':player.attack('kick');break;case'btnHK':player.attack('heavy');break;
+        case'btnSP':player.attack('special');break;case'btnULT':player.attack('ultimate');break;
     }
 }
-function btnUp(id) {
-    if(id==='btnBlock') { TOUCH.block=false; if(player) player.blockPressed=false; }
-}
+function btnUp(id) { if(id==='btnBlock'){TD.block=false;if(player)player.blockPressed=false;} }
 
-// Keyboard
-document.addEventListener('keydown', e => {
-    if(gameState==='fight'){initAudio();
-        if(e.key==='a')JOYSTICK.dx=-1;if(e.key==='d')JOYSTICK.dx=1;
-        if(e.key==='w')JOYSTICK.dy=-0.7;if(e.key==='s')JOYSTICK.dy=0.7;
-        if(e.key===' '||e.key==='Space') player.blockPressed=true;
-        if(e.key==='j')player.attack('light');if(e.key==='k')player.attack('heavy');
-        if(e.key==='l')player.attack('kick');if(e.key===';'||e.key===':')player.attack('heavy');
-        if(e.key==='u')player.attack('special');if(e.key==='i')player.attack('ultimate');
-    }
+document.addEventListener('keydown', e=>{
+    if(gameState!=='fight')return;initAudio();
+    if(e.key==='a')JOYSTICK.dx=-1;if(e.key==='d')JOYSTICK.dx=1;
+    if(e.key==='w')JOYSTICK.dy=-0.7;if(e.key==='s')JOYSTICK.dy=0.7;
+    if(e.key===' '||e.key==='Space')player.blockPressed=true;
+    if(e.key==='j')player.attack('light');if(e.key==='k')player.attack('heavy');
+    if(e.key==='l')player.attack('kick');if(e.key===';'||e.key===':')player.attack('heavy');
+    if(e.key==='u')player.attack('special');if(e.key==='i')player.attack('ultimate');
 });
-document.addEventListener('keyup', e => {
+document.addEventListener('keyup', e=>{
     if(e.key==='a'&&JOYSTICK.dx<0)JOYSTICK.dx=0;if(e.key==='d'&&JOYSTICK.dx>0)JOYSTICK.dx=0;
     if(e.key==='w'&&JOYSTICK.dy<0)JOYSTICK.dy=0;if(e.key==='s'&&JOYSTICK.dy>0)JOYSTICK.dy=0;
-    if(e.key===' '||e.key==='Space') player.blockPressed=false;
+    if(e.key===' '||e.key==='Space')player.blockPressed=false;
 });
 
-// ===== SETTINGS: DRAGGABLE CUSTOMIZATION =====
-let settingsOpen = false;
-let settingsLayout = null;
+// ===== SETTINGS =====
+let settingsOpen = false, settingsLayout = null;
 let dragTarget = null, dragOffX = 0, dragOffY = 0, dragTouchId = -1;
 
-function openSettings() {
-    if (gameState !== 'menu') return;
-    settingsOpen = true;
-    // Clone the layout for editing
-    settingsLayout = JSON.parse(JSON.stringify(buttonLayout));
-    document.getElementById('settingsScreen').classList.add('show');
-    renderSettingsButtons();
-}
-
-function closeSettings() {
-    settingsOpen = false;
-    document.getElementById('settingsScreen').classList.remove('show');
-    // Discard unsaved changes? Actually we auto-save but let's not auto-save on close
-    // The "Done" button saves explicitly
-}
-
+function openSettings() { if(gameState!=='menu')return;settingsOpen=true;settingsLayout=JSON.parse(JSON.stringify(buttonLayout));document.getElementById('settingsScreen').classList.add('show');renderSettingsButtons(); }
+function closeSettings() { settingsOpen=false;document.getElementById('settingsScreen').classList.remove('show'); }
 function renderSettingsButtons() {
-    const content = document.getElementById('settingsContent');
-    // Remove old setting buttons but keep hint and tray
-    content.querySelectorAll('.setting-btn').forEach(el => el.remove());
-    
-    const hint = document.getElementById('settingsHint');
-    const tray = document.getElementById('deletedTray');
-    
-    // Render tray first
-    tray.innerHTML = '<span class="tray-label">🗑️ Deleted:</span>';
-    let deletedCount = 0;
-    BUTTON_DEFS.forEach(cfg => {
-        const l = settingsLayout[cfg.id];
-        if (!l || !l.enabled) {
-            deletedCount++;
-            const item = document.createElement('div');
-            item.className = 'del-item';
-            item.textContent = cfg.text;
-            item.title = 'Tap to restore ' + cfg.label;
-            item.addEventListener('click', (e) => { e.stopPropagation(); restoreButton(cfg.id); });
-            item.addEventListener('touchstart', (e) => { e.stopPropagation(); restoreButton(cfg.id); }, {passive:true});
-            tray.appendChild(item);
-        }
-    });
-    if (deletedCount === 0) {
-        tray.innerHTML = '<span class="tray-label" style="opacity:0.2">All buttons active</span>';
-    }
-    
-    // Render enabled buttons
-    BUTTON_DEFS.forEach(cfg => {
-        const l = settingsLayout[cfg.id];
-        if (!l || !l.enabled) return;
-        
-        const btn = document.createElement('div');
-        btn.className = 'setting-btn';
-        btn.dataset.id = cfg.id;
-        
-        const sz = l.sz || cfg.default.sz;
-        btn.style.cssText = `
-            width:${sz}px; height:${sz}px;
-            bottom:${l.y}%; ${l.x<50?'left':'right'}:${l.x>=50?100-l.x:l.x}%;
-        `;
-        btn.innerHTML = `
-            <span style="font-size:${sz > 52 ? '22px' : '18px'}">${cfg.text}</span>
-            <span style="font-size:7px;opacity:0.5;display:block">${cfg.label}</span>
-            <button class="del-btn" data-id="${cfg.id}">✕</button>
-            <div class="size-ctrl">
-                <input type="range" min="36" max="76" value="${sz}">
-                <span class="size-num">${sz}</span>
-            </div>
-        `;
+    const content=document.getElementById('settingsContent');content.querySelectorAll('.setting-btn').forEach(el=>el.remove());
+    const tray=document.getElementById('deletedTray');
+    tray.innerHTML='<span class="tray-label"><i class="fa-solid fa-trash-can"></i> Deleted:</span>';
+    let dc=0;
+    BUTTON_DEFS.forEach(cfg=>{const l=settingsLayout[cfg.id];if(!l||!l.enabled){dc++;const item=document.createElement('div');item.className='del-item';item.innerHTML=cfg.text;item.title='Tap to restore '+cfg.label;item.addEventListener('click',e=>{e.stopPropagation();restoreButton(cfg.id);});item.addEventListener('touchstart',e=>{e.stopPropagation();restoreButton(cfg.id);},{passive:true});tray.appendChild(item);}});
+    if(dc===0)tray.innerHTML='<span class="tray-label" style="opacity:0.2">All buttons active</span>';
+    BUTTON_DEFS.forEach(cfg=>{const l=settingsLayout[cfg.id];if(!l||!l.enabled)return;
+        const btn=document.createElement('div');btn.className='setting-btn';btn.dataset.id=cfg.id;
+        const sz=l.sz||cfg.default.sz;
+        btn.style.cssText='width:'+sz+'px;height:'+sz+'px;bottom:'+l.y+'%;'+(l.x<50?'left':'right')+':'+(l.x>=50?100-l.x:l.x)+'%;';
+        btn.innerHTML='<span style="font-size:'+(sz>52?'22px':'18px')+'">'+cfg.text+'</span><span style="font-size:7px;opacity:0.5;display:block">'+cfg.label+'</span><button class="del-btn" data-id="'+cfg.id+'"><i class="fa-solid fa-xmark"></i></button><div class="size-ctrl"><input type="range" min="36" max="76" value="'+sz+'"><span class="size-num">'+sz+'</span></div>';
         content.appendChild(btn);
-        
-        // Delete button
-        btn.querySelector('.del-btn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            deleteButton(cfg.id);
-        });
-        btn.querySelector('.del-btn').addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-            deleteButton(cfg.id);
-        }, {passive:true});
-        
-        // Size slider
-        const slider = btn.querySelector('input[type=range]');
-        const sizeNum = btn.querySelector('.size-num');
-        slider.addEventListener('input', () => {
-            const v = parseInt(slider.value);
-            sizeNum.textContent = v;
-            const w = v + 'px';
-            const h = cfg.id === 'btnBlock' ? Math.round(v*0.7)+'px' : w;
-            btn.style.width = w;
-            btn.style.height = h;
-            settingsLayout[cfg.id].sz = v;
-        });
-        slider.addEventListener('touchstart', (e) => e.stopPropagation(), {passive:true});
-        slider.addEventListener('mousedown', (e) => e.stopPropagation());
-        
-        // Drag handlers
-        setupDragHandlers(btn, cfg.id);
+        btn.querySelector('.del-btn').addEventListener('click',e=>{e.stopPropagation();deleteButton(cfg.id);});
+        btn.querySelector('.del-btn').addEventListener('touchstart',e=>{e.stopPropagation();deleteButton(cfg.id);},{passive:true});
+        const slider=btn.querySelector('input[type=range]'),sn=btn.querySelector('.size-num');
+        slider.addEventListener('input',()=>{const v=parseInt(slider.value);sn.textContent=v;btn.style.width=v+'px';btn.style.height=(cfg.id==='btnBlock'?Math.round(v*0.7):v)+'px';settingsLayout[cfg.id].sz=v;});
+        slider.addEventListener('touchstart',e=>e.stopPropagation(),{passive:true});slider.addEventListener('mousedown',e=>e.stopPropagation());
+        setupDragHandlers(btn,cfg.id);
     });
 }
-
-function setupDragHandlers(btn, id) {
-    const startDrag = (clientX, clientY, identifier) => {
-        const r = btn.getBoundingClientRect();
-        dragTarget = { id, el: btn };
-        dragOffX = clientX - r.left - r.width/2;
-        dragOffY = clientY - r.top - r.height/2;
-        dragTouchId = identifier;
-        btn.classList.add('dragging');
-    };
-    
-    const moveDrag = (clientX, clientY) => {
-        if (!dragTarget) return;
-        const container = document.getElementById('settingsContent');
-        const cr = container.getBoundingClientRect();
-        // Calculate position as percentage
-        let px = ((clientX - dragOffX) - cr.left) / cr.width * 100;
-        let py = ((clientY - dragOffY) - cr.top) / cr.height * 100;
-        // Clamp
-        px = Math.max(1, Math.min(98, px));
-        py = Math.max(1, Math.min(94, py));
-        
-        const l = settingsLayout[id];
-        l.x = px;
-        l.y = py;
-        
-        const el = dragTarget.el;
-        el.style.bottom = py + '%';
-        if (px < 50) {
-            el.style.left = px + '%';
-            el.style.right = 'auto';
-        } else {
-            el.style.right = (100 - px) + '%';
-            el.style.left = 'auto';
-        }
-    };
-    
-    const endDrag = () => {
-        if (dragTarget) {
-            dragTarget.el.classList.remove('dragging');
-            dragTarget = null;
-            dragTouchId = -1;
-        }
-    };
-    
-    // Touch
-    btn.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.del-btn') || e.target.closest('.size-ctrl')) return;
-        e.preventDefault();
-        const touch = e.changedTouches[0];
-        startDrag(touch.clientX, touch.clientY, touch.identifier);
-    }, {passive: false});
-    
-    document.addEventListener('touchmove', (e) => {
-        if (!dragTarget) return;
-        for (let t of e.changedTouches) {
-            if (t.identifier === dragTouchId) {
-                e.preventDefault();
-                moveDrag(t.clientX, t.clientY);
-            }
-        }
-    }, {passive: false});
-    
-    document.addEventListener('touchend', (e) => {
-        if (!dragTarget) return;
-        for (let t of e.changedTouches) {
-            if (t.identifier === dragTouchId) {
-                endDrag();
-            }
-        }
-    });
-    
-    document.addEventListener('touchcancel', () => { endDrag(); });
-    
-    // Mouse
-    btn.addEventListener('mousedown', (e) => {
-        if (e.target.closest('.del-btn') || e.target.closest('.size-ctrl')) return;
-        e.preventDefault();
-        startDrag(e.clientX, e.clientY, -1);
-    });
-    
-    document.addEventListener('mousemove', (e) => {
-        if (!dragTarget || dragTouchId !== -1) return;
-        moveDrag(e.clientX, e.clientY);
-    });
-    
-    document.addEventListener('mouseup', () => {
-        if (dragTarget && dragTouchId === -1) endDrag();
-    });
+function setupDragHandlers(btn,id){
+    const startDrag=(clientX,clientY,identifier)=>{const r=btn.getBoundingClientRect();dragTarget={id,el:btn};dragOffX=clientX-r.left-r.width/2;dragOffY=clientY-r.top-r.height/2;dragTouchId=identifier;btn.classList.add('dragging');};
+    const moveDrag=(clientX,clientY)=>{if(!dragTarget)return;const cr=document.getElementById('settingsContent').getBoundingClientRect();let px=((clientX-dragOffX)-cr.left)/cr.width*100,py=((clientY-dragOffY)-cr.top)/cr.height*100;px=Math.max(1,Math.min(98,px));py=Math.max(1,Math.min(94,py));const l=settingsLayout[id];l.x=px;l.y=py;const el=dragTarget.el;el.style.bottom=py+'%';if(px<50){el.style.left=px+'%';el.style.right='auto';}else{el.style.right=(100-px)+'%';el.style.left='auto';}};
+    const endDrag=()=>{if(dragTarget){dragTarget.el.classList.remove('dragging');dragTarget=null;dragTouchId=-1;}};
+    btn.addEventListener('touchstart',e=>{if(e.target.closest('.del-btn')||e.target.closest('.size-ctrl'))return;e.preventDefault();startDrag(e.changedTouches[0].clientX,e.changedTouches[0].clientY,e.changedTouches[0].identifier);},{passive:false});
+    document.addEventListener('touchmove',e=>{if(!dragTarget)return;for(let t of e.changedTouches){if(t.identifier===dragTouchId){e.preventDefault();moveDrag(t.clientX,t.clientY);}}},{passive:false});
+    document.addEventListener('touchend',e=>{if(!dragTarget)return;for(let t of e.changedTouches){if(t.identifier===dragTouchId)endDrag();}});
+    document.addEventListener('touchcancel',()=>{endDrag();});
+    btn.addEventListener('mousedown',e=>{if(e.target.closest('.del-btn')||e.target.closest('.size-ctrl'))return;e.preventDefault();startDrag(e.clientX,e.clientY,-1);});
+    document.addEventListener('mousemove',e=>{if(!dragTarget||dragTouchId!==-1)return;moveDrag(e.clientX,e.clientY);});
+    document.addEventListener('mouseup',()=>{if(dragTarget&&dragTouchId===-1)endDrag();});
 }
+function deleteButton(id){if(settingsLayout[id]){settingsLayout[id].enabled=false;renderSettingsButtons();}}
+function restoreButton(id){if(settingsLayout[id]){settingsLayout[id].enabled=true;renderSettingsButtons();}}
+function saveSettings(){saveButtonLayout(settingsLayout);destroyControls();setupActionButtons();closeSettings();}
+function destroyControls(){BUTTON_DEFS.forEach(cfg=>{const el=document.getElementById(cfg.id);if(el)el.remove();});controlsCreated=false;}
 
-function deleteButton(id) {
-    if (settingsLayout[id]) {
-        settingsLayout[id].enabled = false;
-        renderSettingsButtons();
-    }
-}
-
-function restoreButton(id) {
-    if (settingsLayout[id]) {
-        settingsLayout[id].enabled = true;
-        renderSettingsButtons();
-    }
-}
-
-function saveSettings() {
-    saveButtonLayout(settingsLayout);
-    // Recreate controls with new layout
-    destroyControls();
-    setupActionButtons();
-    closeSettings();
-}
-
-function destroyControls() {
-    BUTTON_DEFS.forEach(cfg => {
-        const el = document.getElementById(cfg.id);
-        if (el) el.remove();
-    });
-    controlsCreated = false;
-}
-
-// UI Events
-document.getElementById('settingsBtn').addEventListener('click', () => { initAudio(); openSettings(); });
-document.getElementById('settingsClose').addEventListener('click', closeSettings);
-document.getElementById('settingsSaveBtn').addEventListener('click', saveSettings);
-document.getElementById('settingsResetBtn').addEventListener('click', () => {
-    settingsLayout = resetButtonLayout();
-    renderSettingsButtons();
-});
-document.getElementById('settingsAddBtn').addEventListener('click', () => {
-    // Restore all disabled buttons
-    BUTTON_DEFS.forEach(cfg => {
-        if (settingsLayout[cfg.id]) settingsLayout[cfg.id].enabled = true;
-    });
-    renderSettingsButtons();
-});
+document.getElementById('settingsBtn').addEventListener('click',()=>{initAudio();openSettings();});
+document.getElementById('settingsClose').addEventListener('click',closeSettings);
+document.getElementById('settingsSaveBtn').addEventListener('click',saveSettings);
+document.getElementById('settingsResetBtn').addEventListener('click',()=>{settingsLayout=resetButtonLayout();renderSettingsButtons();});
+document.getElementById('settingsAddBtn').addEventListener('click',()=>{BUTTON_DEFS.forEach(cfg=>{if(settingsLayout[cfg.id])settingsLayout[cfg.id].enabled=true;});renderSettingsButtons();});
 
 // ===== GAME LOOP =====
 let lastTime = 0;
-
 function update(dt) {
     if(gameState!=='fight')return;
     frameCount++;
     if(announceText){announceTimer--;if(announceTimer<=0)announceText='';return;}
     if(frameCount>60){timeLeft-=dt;if(timeLeft<=0){timeLeft=0;endRound(player.health>enemy.health?'player':player.health<enemy.health?'enemy':'draw');return;}}
-    
-    const jx = JOYSTICK.dx, jy = JOYSTICK.dy;
-    if (jx !== 0 || jy !== 0) {
-        const speed = 5.5;
-        player.vx = jx * speed;
-        player.vz = -jy * speed * 0.5;
-        if(player.state==='idle'||player.state==='walking') player.state='walking';
-    } else if(player.state==='walking') {
-        player.state='idle';
-    }
-    
-    ai.update(enemy,player,dt);
-    player.update(dt,enemy); enemy.update(dt,player);
-    const dist=Math.abs(player.x-enemy.x);
-    const md=player.w*0.55;
-    if(dist<md){const p=(md-dist)/2;const dir=player.x<enemy.x?-1:1;player.x+=dir*p;enemy.x-=dir*p;}
+    const jx=JOYSTICK.dx,jy=JOYSTICK.dy;
+    if(jx!==0||jy!==0){player.vx=jx*5.5;player.vz=-jy*5.5*0.5;if(player.state==='idle'||player.state==='walking')player.state='walking';}else if(player.state==='walking')player.state='idle';
+    ai.update(enemy,player,dt);player.update(dt,enemy);enemy.update(dt,player);
+    const dist=Math.abs(player.x-enemy.x),md=player.w*0.55;
+    if(dist<md){const p=(md-dist)/2,dir=player.x<enemy.x?-1:1;player.x+=dir*p;enemy.x-=dir*p;}
     checkHit(player,enemy);checkHit(enemy,player);
     screenShake*=0.88;if(screenShake<0.1)screenShake=0;
     particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.2;p.life--;return p.life>0;});
     floatTexts=floatTexts.filter(f=>{f.y-=0.6;f.timer-=dt;return f.timer>0;});
-    if(player.health<=0)endRound('enemy');
-    else if(enemy.health<=0)endRound('player');
+    if(player.health<=0)endRound('enemy');else if(enemy.health<=0)endRound('player');
 }
-
 function draw() {
     const W=canvas.width,H=canvas.height;
     ctx.clearRect(0,0,W,H);ctx.save();
     if(screenShake>0.5)ctx.translate((Math.random()-0.5)*screenShake,(Math.random()-0.5)*screenShake);
-    
     const sky=ctx.createLinearGradient(0,0,0,H*GROUND_RATIO);
     sky.addColorStop(0,'#0a0015');sky.addColorStop(0.3,'#150830');sky.addColorStop(0.6,'#1a0a30');sky.addColorStop(1,'#0d0520');
     ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*GROUND_RATIO);
     ctx.fillStyle='rgba(255,255,255,0.5)';
-    for(let i=0;i<50;i++){const sx=(i*139.7+i*i*7.1)%W,sy=(i*91.3+i*i*3.9)%(H*GROUND_RATIO*0.5);
-        ctx.globalAlpha=0.2+Math.sin(Date.now()*0.0008+i)*0.3;ctx.fillRect(sx,sy,1.5,1.5);}
+    for(let i=0;i<50;i++){const sx=(i*139.7+i*i*7.1)%W,sy=(i*91.3+i*i*3.9)%(H*GROUND_RATIO*0.5);ctx.globalAlpha=0.2+Math.sin(Date.now()*0.0008+i)*0.3;ctx.fillRect(sx,sy,1.5,1.5);}
     ctx.globalAlpha=1;
     ctx.fillStyle='#ffe8d0';ctx.beginPath();ctx.arc(W*0.87,H*0.1,28,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#0a0015';ctx.beginPath();ctx.arc(W*0.87+7,H*0.1-4,24,0,Math.PI*2);ctx.fill();
@@ -1072,18 +1008,13 @@ function draw() {
     ctx.strokeStyle='rgba(255,68,68,0.12)';ctx.lineWidth=2;ctx.setLineDash([5,10]);
     ctx.beginPath();ctx.moveTo(18,H*GROUND_RATIO);ctx.lineTo(18,H);ctx.stroke();
     ctx.beginPath();ctx.moveTo(W-18,H*GROUND_RATIO);ctx.lineTo(W-18,H);ctx.stroke();ctx.setLineDash([]);
-    
-    const fighters = [player, enemy].sort((a,b)=>a.z-b.z);
-    fighters.forEach(f=>f.draw(ctx));
-    
-    particles.forEach(p=>{ctx.globalAlpha=p.life/p.maxLife;ctx.fillStyle=p.color;
-        ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
+
+    [player,enemy].sort((a,b)=>a.z-b.z).forEach(f=>f.draw(ctx));
+
+    particles.forEach(p=>{ctx.globalAlpha=p.life/p.maxLife;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
     ctx.globalAlpha=1;
-    floatTexts.forEach(f=>{ctx.globalAlpha=f.timer/f.maxTimer;ctx.fillStyle=f.color;
-        ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.strokeStyle='#000';ctx.lineWidth=3;
-        ctx.strokeText(f.text,f.x,f.y);ctx.fillText(f.text,f.x,f.y);});
-    ctx.globalAlpha=1;
-    ctx.restore();
+    floatTexts.forEach(f=>{ctx.globalAlpha=f.timer/f.maxTimer;ctx.fillStyle=f.color;ctx.font='bold 22px Arial';ctx.textAlign='center';ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.strokeText(f.text,f.x,f.y);ctx.fillText(f.text,f.x,f.y);});
+    ctx.globalAlpha=1;ctx.restore();
 
     const barW=W*0.38,barH=20,barY=22,bx1=W*0.02,bx2=W*0.6;
     ctx.fillStyle='#222';ctx.fillRect(bx1,barY,barW,barH);
@@ -1098,12 +1029,8 @@ function draw() {
     ctx.font='bold 13px Arial';ctx.textAlign='left';ctx.fillStyle=player.color;ctx.fillText(player.name,bx1,barY-6);
     ctx.textAlign='right';ctx.fillStyle=enemy.color;ctx.fillText(enemy.name,bx2+barW,barY-6);
     const sbW=barW*0.65,sbH=5,sbY=barY+barH+3;
-    ctx.fillStyle='#222';ctx.fillRect(bx1,sbY,sbW,sbH);
-    const p1s=player.superMeter/player.maxSuper;ctx.fillStyle=p1s>=1?'#ffcc00':'#4488ff';
-    ctx.fillRect(bx1+1,sbY+1,(sbW-2)*p1s,sbH-2);
-    ctx.fillStyle='#222';ctx.fillRect(bx2+barW-sbW,sbY,sbW,sbH);
-    const p2s=enemy.superMeter/enemy.maxSuper;ctx.fillStyle=p2s>=1?'#ffcc00':'#4488ff';
-    ctx.fillRect(bx2+barW-sbW+1,sbY+1,(sbW-2)*p2s,sbH-2);
+    ctx.fillStyle='#222';ctx.fillRect(bx1,sbY,sbW,sbH);const p1s=player.superMeter/player.maxSuper;ctx.fillStyle=p1s>=1?'#ffcc00':'#4488ff';ctx.fillRect(bx1+1,sbY+1,(sbW-2)*p1s,sbH-2);
+    ctx.fillStyle='#222';ctx.fillRect(bx2+barW-sbW,sbY,sbW,sbH);const p2s=enemy.superMeter/enemy.maxSuper;ctx.fillStyle=p2s>=1?'#ffcc00':'#4488ff';ctx.fillRect(bx2+barW-sbW+1,sbY+1,(sbW-2)*p2s,sbH-2);
     ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='7px Arial';ctx.textAlign='left';ctx.fillText('SUPER',bx1,sbY+4);ctx.textAlign='right';ctx.fillText('SUPER',bx2+barW,sbY+4);
     const cx=W/2;ctx.textAlign='center';
     ctx.font='bold 13px Arial';ctx.fillStyle='#888';
@@ -1112,18 +1039,13 @@ function draw() {
     ctx.font='bold 28px Arial';ctx.fillStyle=timeLeft<10?'#ff4444':timeLeft<30?'#ffaa00':'#fff';
     ctx.fillText(Math.ceil(timeLeft),cx,barY+barH+26);
     ctx.font='11px Arial';ctx.fillStyle='#666';ctx.fillText('ROUND '+currentRound,cx,barY-12);
-    if(enemy.hitCount>2){ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillStyle='#ff8800';ctx.strokeStyle='#000';ctx.lineWidth=3;
-        ctx.strokeText(enemy.hitCount+' HIT COMBO!',cx,H*0.38);ctx.fillText(enemy.hitCount+' HIT COMBO!',cx,H*0.38);}
-    if(announceText){ctx.font='bold 56px Arial';ctx.textAlign='center';ctx.strokeStyle='#000';ctx.lineWidth=4;
-        ctx.fillStyle=announceText==='FIGHT!'?'#ff4444':'#fff';ctx.strokeText(announceText,cx,H*0.35);ctx.fillText(announceText,cx,H*0.35);}
-    if(!('ontouchstart'in window)&&frameCount<240){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='center';
-        ctx.fillText('WASD:Move  Space:Block  J:LP  K:HP  L:LK  ;:HK  U:SP  I:ULT',cx,H-16);}
+    if(enemy.hitCount>2){ctx.font='bold 26px Arial';ctx.fillStyle='#ff8800';ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.strokeText(enemy.hitCount+' HIT COMBO!',cx,H*0.38);ctx.fillText(enemy.hitCount+' HIT COMBO!',cx,H*0.38);}
+    if(announceText){ctx.font='bold 56px Arial';ctx.strokeStyle='#000';ctx.lineWidth=4;ctx.fillStyle=announceText==='FIGHT!'?'#ff4444':'#fff';ctx.strokeText(announceText,cx,H*0.35);ctx.fillText(announceText,cx,H*0.35);}
+    if(!('ontouchstart'in window)&&frameCount<240){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.fillText('WASD:Move  Space:Block  J:LP  K:HP  L:LK  ;:HK  U:SP  I:ULT',cx,H-16);}
 }
-
 function loop(ts) {
     const dt=Math.min(0.05,(ts-lastTime)/1000);lastTime=ts;
-    if(gameState==='fight'||gameState==='ko'){update(dt);draw();}
-    else {ctx.clearRect(0,0,canvas.width,canvas.height);}
+    if(gameState==='fight'||gameState==='ko'){update(dt);draw();}else{ctx.clearRect(0,0,canvas.width,canvas.height);}
     requestAnimationFrame(loop);
 }
 
@@ -1132,26 +1054,19 @@ function setupCharSelect() {
     const grid=document.getElementById('charGrid');grid.innerHTML='';
     CHARACTERS.forEach((c,i)=>{const card=document.createElement('div');
         card.className='char-card'+(i===playerChar?' selected':'');
-        card.innerHTML=`<div class=\"char-avatar\">${c.emoji}</div><div class=\"char-name\">${c.name}</div><div class=\"char-desc\">${c.desc}</div>`;
-        card.addEventListener('click',()=>{document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('selected'));
-            card.classList.add('selected');playerChar=i;enemyChar=(i+1)%CHARACTERS.length;if(enemyChar===playerChar)enemyChar=(playerChar+1)%CHARACTERS.length;});
+        card.innerHTML='<div class="char-avatar">'+c.icon+'</div><div class="char-name">'+c.name+'</div><div class="char-desc">'+c.desc+'</div>';
+        card.addEventListener('click',()=>{document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('selected'));card.classList.add('selected');playerChar=i;enemyChar=(i+1)%CHARACTERS.length;if(enemyChar===playerChar)enemyChar=(playerChar+1)%CHARACTERS.length;});
         grid.appendChild(card);});
 }
 // UI
-document.getElementById('startBtn').addEventListener('click',()=>{initAudio();
-    document.getElementById('menuScreen').classList.add('hidden');document.getElementById('charSelectScreen').classList.add('show');setupCharSelect();});
-document.getElementById('charConfirmBtn').addEventListener('click',()=>{document.getElementById('charSelectScreen').classList.remove('show');
-    difficulty=document.getElementById('diffSelect').value;roundsToWin=parseInt(document.getElementById('roundsSelect').value);
-    gameState='fight';initGame();announce();});
-document.getElementById('rematchBtn').addEventListener('click',()=>{initAudio();
-    document.getElementById('resultScreen').classList.remove('show');gameState='fight';p1Rounds=0;p2Rounds=0;currentRound=1;initGame();announce();});
-document.getElementById('menuBtn').addEventListener('click',()=>{document.getElementById('resultScreen').classList.remove('show');
-    document.getElementById('menuScreen').classList.remove('hidden');gameState='menu';});
+document.getElementById('startBtn').addEventListener('click',()=>{initAudio();document.getElementById('menuScreen').classList.add('hidden');document.getElementById('charSelectScreen').classList.add('show');setupCharSelect();});
+document.getElementById('charConfirmBtn').addEventListener('click',()=>{document.getElementById('charSelectScreen').classList.remove('show');difficulty=document.getElementById('diffSelect').value;roundsToWin=parseInt(document.getElementById('roundsSelect').value);gameState='fight';initGame();announce();});
+document.getElementById('rematchBtn').addEventListener('click',()=>{initAudio();document.getElementById('resultScreen').classList.remove('show');gameState='fight';p1Rounds=0;p2Rounds=0;currentRound=1;initGame();announce();});
+document.getElementById('menuBtn').addEventListener('click',()=>{document.getElementById('resultScreen').classList.remove('show');document.getElementById('menuScreen').classList.remove('hidden');gameState='menu';});
 
-// Init
 initGame(); setupJoystick(); setupActionButtons();
 requestAnimationFrame(loop);
-console.log('🔥 LES FIGHT v4 - Customizable Controls!');
+console.log('🔥 LES FIGHT v5 - Font Awesome + Realistic Humans!');
 </script>
 </body>
 </html>
