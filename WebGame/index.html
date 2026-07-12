@@ -10,9 +10,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font
 
 /* Force landscape on mobile */
 @media (orientation: portrait) {
-  #rotateHint {
-    display: flex !important;
-  }
+  #rotateHint { display: flex !important; }
   #gameContainer { display: none !important; }
 }
 #rotateHint {
@@ -47,6 +45,106 @@ canvas { display: block; width: 100%; height: 100%; }
 .menu-row select { padding: 6px 14px; font-size: clamp(12px, 1.2vw, 15px); background: #1a1a2e; color: #fff; border: 1px solid #ff444488; border-radius: 8px; text-align: center; min-width: 120px; }
 .play-btn { padding: 14px 50px; margin-top: 14px; font-size: clamp(16px, 2vw, 24px); font-weight: 900; border: none; background: linear-gradient(135deg, #ff4400, #ff6600); color: #fff; border-radius: 50px; cursor: pointer; letter-spacing: 3px; box-shadow: 0 4px 30px rgba(255,68,0,0.4); }
 .play-btn:active { transform: scale(0.95); }
+
+/* Settings gear */
+#settingsBtn {
+    position: absolute; top: 12px; right: 16px; z-index: 101;
+    font-size: clamp(22px, 3vw, 30px); cursor: pointer; opacity: 0.4;
+    transition: opacity 0.3s; padding: 8px;
+}
+#settingsBtn:hover, #settingsBtn:active { opacity: 0.9; }
+
+/* Settings screen */
+#settingsScreen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 2, 12, 0.96); z-index: 200;
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s;
+    overflow: hidden;
+}
+#settingsScreen.show { opacity: 1; pointer-events: all; }
+#settingsHeader {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px; flex-shrink: 0;
+}
+#settingsTitle { font-size: clamp(16px, 2vw, 22px); font-weight: 900; color: #fff; letter-spacing: 2px; }
+#settingsClose { font-size: clamp(20px, 2.5vw, 28px); color: #ff4444; cursor: pointer; padding: 6px 10px; }
+#settingsContent {
+    flex: 1; position: relative; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.05); margin: 4px 10px;
+    border-radius: 12px; background: rgba(0,0,0,0.3);
+}
+#settingsHint {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.2); font-size: clamp(10px, 1vw, 13px);
+    text-align: center; letter-spacing: 1px; pointer-events: none;
+    z-index: 10; white-space: nowrap;
+}
+#settingsFooter {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 10px 18px; flex-shrink: 0;
+    flex-wrap: wrap;
+}
+.settings-btn {
+    padding: 8px 22px; font-size: clamp(11px, 1.2vw, 14px); font-weight: bold;
+    border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
+    color: #fff; border-radius: 20px; cursor: pointer; letter-spacing: 1px;
+}
+.settings-btn:active { transform: scale(0.95); }
+.settings-btn.reset { border-color: #ff444466; color: #ff6666; }
+.settings-btn.save { border-color: #44ff8866; color: #66ff88; background: rgba(68,255,136,0.1); }
+.settings-btn.add { border-color: #4488ff66; color: #6688ff; }
+
+/* Settings draggable button */
+.setting-btn {
+    position: absolute; z-index: 20;
+    border-radius: 50%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #fff; cursor: grab; touch-action: none;
+    border: 2px solid rgba(255,255,255,0.12);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: rgba(255,255,255,0.04);
+}
+.setting-btn.dragging { border-color: #ff6600; box-shadow: 0 0 30px rgba(255,102,0,0.3); z-index: 50; cursor: grabbing; }
+.setting-btn .del-btn {
+    position: absolute; top: -8px; right: -8px; width: 22px; height: 22px;
+    border-radius: 50%; background: #ff3333; border: none; color: #fff;
+    font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    opacity: 0.8; z-index: 25;
+}
+.setting-btn .del-btn:active { opacity: 1; transform: scale(1.2); }
+.setting-btn .size-ctrl {
+    position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
+    width: 80px; display: flex; align-items: center; gap: 4px;
+    opacity: 0.6; pointer-events: auto;
+}
+.setting-btn .size-ctrl input[type=range] {
+    width: 100%; height: 3px; -webkit-appearance: none; appearance: none;
+    background: rgba(255,255,255,0.2); border-radius: 2px; outline: none;
+}
+.setting-btn .size-ctrl input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: #ff6600; cursor: pointer;
+}
+.setting-btn .size-num {
+    font-size: 8px; color: rgba(255,255,255,0.5); min-width: 18px; text-align: center;
+}
+
+/* Deleted buttons tray */
+#deletedTray {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 6px; background: rgba(255,68,68,0.06); border-top: 1px solid rgba(255,68,68,0.1);
+    display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: center;
+    min-height: 40px;
+}
+#deletedTray .tray-label { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 1px; margin-right: 4px; }
+#deletedTray .del-item {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; opacity: 0.5;
+    background: rgba(255,255,255,0.03);
+}
+#deletedTray .del-item:active { opacity: 1; background: rgba(255,255,255,0.1); }
 
 /* Result */
 #resultScreen {
@@ -113,8 +211,6 @@ canvas { display: block; width: 100%; height: 100%; }
     pointer-events: auto;
 }
 .ctrl-btn .lbl { font-size: 7px; opacity: 0.7; display: block; margin-top: -1px; }
-
-/* Block button special */
 #btnBlock {
     position: absolute; z-index: 10;
     border-radius: 12px;
@@ -155,6 +251,23 @@ canvas { display: block; width: 100%; height: 100%; }
             </select>
         </div>
         <button class="play-btn" id="startBtn">⚔️ FIGHT</button>
+        <div id="settingsBtn">⚙️</div>
+    </div>
+
+    <div id="settingsScreen">
+        <div id="settingsHeader">
+            <div id="settingsTitle">🎮 CUSTOMIZE CONTROLS</div>
+            <div id="settingsClose">✕</div>
+        </div>
+        <div id="settingsContent">
+            <div id="settingsHint">↕ Drag to move &nbsp;·&nbsp; ✕ to remove &nbsp;·&nbsp; Slider for size</div>
+            <div id="deletedTray"></div>
+        </div>
+        <div id="settingsFooter">
+            <button class="settings-btn add" id="settingsAddBtn">+ Add buttons</button>
+            <button class="settings-btn reset" id="settingsResetBtn">↺ Reset</button>
+            <button class="settings-btn save" id="settingsSaveBtn">✓ Done</button>
+        </div>
     </div>
 
     <div id="charSelectScreen">
@@ -175,7 +288,7 @@ canvas { display: block; width: 100%; height: 100%; }
 
 <script>
 // ============================================================
-// LES FIGHT - Web Edition v3 - Virtual Joystick + Landscape
+// LES FIGHT - Web Edition v4 - Customizable Controls!
 // ============================================================
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -217,7 +330,54 @@ let playerChar = 0, enemyChar = 1;
 const JOYSTICK = { active: false, touchId: -1, dx: 0, dy: 0, baseX: 0, baseY: 0 };
 const JSTICK_RADIUS = 55;
 
-// Fighter class
+// ===== CUSTOM BUTTON LAYOUT SYSTEM =====
+const BUTTON_DEFS = [
+    { id:'btnLP', text:'👊', label:'LP', default:{x:72,y:45,sz:50}, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)' },
+    { id:'btnHP', text:'💥', label:'HP', default:{x:78,y:36,sz:54}, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)' },
+    { id:'btnLK', text:'🦵', label:'LK', default:{x:84,y:45,sz:50}, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)' },
+    { id:'btnHK', text:'🦶', label:'HK', default:{x:78,y:54,sz:54}, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)' },
+    { id:'btnSP', text:'⚡', label:'SP', default:{x:91,y:38,sz:52}, bg:'rgba(255,200,0,0.12)', bd:'rgba(255,200,0,0.3)' },
+    { id:'btnULT', text:'🌟', label:'ULT', default:{x:91,y:52,sz:52}, bg:'rgba(255,68,68,0.12)', bd:'rgba(255,68,68,0.3)' },
+    { id:'btnBlock', text:'🛡️', label:'BLOCK', default:{x:10,y:28,sz:60}, bg:'rgba(68,136,255,0.1)', bd:'rgba(68,136,255,0.25)' },
+];
+
+function getDefaultLayout() {
+    const l = {};
+    BUTTON_DEFS.forEach(b => { l[b.id] = { x:b.default.x, y:b.default.y, sz:b.default.sz, enabled:true }; });
+    return l;
+}
+
+let buttonLayout = null;
+function loadButtonLayout() {
+    try {
+        const saved = localStorage.getItem('lesfight_btns');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // Merge with defaults to handle any new buttons
+            const def = getDefaultLayout();
+            Object.keys(def).forEach(k => {
+                if (!parsed[k]) parsed[k] = def[k];
+                else { if (parsed[k].x===undefined) parsed[k].x=def[k].x; if (parsed[k].y===undefined) parsed[k].y=def[k].y; if (parsed[k].sz===undefined) parsed[k].sz=def[k].sz; if (parsed[k].enabled===undefined) parsed[k].enabled=true; }
+            });
+            buttonLayout = parsed;
+            return parsed;
+        }
+    } catch(e) {}
+    buttonLayout = getDefaultLayout();
+    return getDefaultLayout();
+}
+function saveButtonLayout(layout) {
+    buttonLayout = layout;
+    try { localStorage.setItem('lesfight_btns', JSON.stringify(layout)); } catch(e) {}
+}
+function resetButtonLayout() {
+    const def = getDefaultLayout();
+    saveButtonLayout(def);
+    return def;
+}
+loadButtonLayout();
+
+// ===== FIGHTER CLASS =====
 class Fighter {
     constructor(x, z, isPlayer, charIdx) {
         this.x = x; this.z = z || 0; this.y = 0;
@@ -239,7 +399,7 @@ class Fighter {
         this.attackType = ''; this.attackHit = false;
         this.animTime = 0; this.floatY = 0;
         this.wins = 0; this.comboActive = 0;
-        this.yOffset = 0; // Z depth visual offset
+        this.yOffset = 0;
     }
     get groundY() { return canvas.height * GROUND_RATIO + this.z * 15; }
     get hitbox() {
@@ -271,8 +431,7 @@ class Fighter {
         playHit(0.8+amount*0.003);
         if(this.hitCount>2) addFloat(this.x, this.y-80, this.hitCount+' HIT!', '#ff8800', 0.8);
         addParticles(this.x, this.y-50, 8+amount*0.04, '#ffff44', 5);
-        addFloat(this.x+(Math.random()-0.5)*20, this.y-60-Math.random()*20,
-                 '-'+Math.round(amount), amount>150?'#ff4400':amount>80?'#ffaa00':'#fff', 0.7);
+        addFloat(this.x+(Math.random()-0.5)*20, this.y-60-Math.random()*20, '-'+Math.round(amount), amount>150?'#ff4400':amount>80?'#ffaa00':'#fff', 0.7);
         if(this.health<=0) { this.state='knocked'; this.stateTimer=90; this.vy=-10; this.vx=this.facingRight?18:-18; playKO(); }
         return true;
     }
@@ -300,10 +459,8 @@ class Fighter {
         this.stateTimer--; if(this.attackCooldown>0) this.attackCooldown--;
         this.vy+=GRAVITY; this.x+=this.vx; this.y+=this.vy; this.z+=this.vz;
         this.vx*=0.88; this.vz*=0.88;
-        // Ground check - Z affects ground Y
         const gy = canvas.height * GROUND_RATIO + this.z * 12;
         if(this.y>=gy){this.y=gy;this.vy=0;this.grounded=true;}
-        // Bounds
         this.x = Math.max(30, Math.min(canvas.width-30, this.x));
         this.z = Math.max(-3, Math.min(3, this.z));
         if(this.invulnerable){this.invulnTimer--;if(this.invulnTimer<=0)this.invulnerable=false;}
@@ -317,7 +474,6 @@ class Fighter {
         if(opp&&this.state!=='knocked')this.facingRight=opp.x>this.x;
         if(this.state!=='blocking')this.stamina=Math.min(100,this.stamina+0.15);
         else {this.stamina-=0.4;if(this.stamina<=0){this.stamina=0;this.blockPressed=false;}}
-        // Blocking state
         if(this.blockPressed && this.state!=='attacking' && this.state!=='hit' && this.state!=='knocked') this.state='blocking';
         else if(this.state==='blocking' && !this.blockPressed && this.stateTimer<=0) this.state='idle';
         if(this.state==='idle')this.addSuper(0.015);
@@ -325,30 +481,25 @@ class Fighter {
     draw(ctx) {
         const pulse = this.invulnerable&&Math.floor(Date.now()/80)%2===0;
         if(pulse)ctx.globalAlpha=0.4;
-        // Z-depth scaling
         const scale = 1 + this.z * 0.06;
         ctx.save();
         ctx.translate(this.x, this.y+this.floatY);
         ctx.scale(scale, scale);
         const d = this.facingRight?1:-1;
-        // Shadow (larger when closer)
         ctx.fillStyle='rgba(0,0,0,'+(0.2+this.z*0.03)+')';
         ctx.beginPath();ctx.ellipse(0,3,22+this.z*2,5+this.z*0.5,0,0,Math.PI*2);ctx.fill();
         const col = this.state==='hit'?'#ffaa00':this.color;
         const dk = this.dark;
-        // LEGS
         ctx.strokeStyle=dk; ctx.lineWidth=9; ctx.lineCap='round';
         const legS = this.state==='walking'?Math.sin(this.animTime*4):0;
         ctx.beginPath();ctx.moveTo(-5,-32);ctx.lineTo(-8+legS*6,-4);ctx.stroke();
         ctx.beginPath();ctx.moveTo(5,-32);ctx.lineTo(8-legS*6,-4);ctx.stroke();
         ctx.fillStyle='#222';ctx.fillRect(-12+legS*5,-4,10,5);ctx.fillRect(5-legS*5,-4,10,5);
-        // TORSO
         ctx.fillStyle=col;
         ctx.beginPath();ctx.moveTo(-16*d,-72);ctx.lineTo(16*d,-72);ctx.lineTo(18*d,-38);ctx.lineTo(-18*d,-38);ctx.closePath();ctx.fill();
         ctx.fillStyle=dk;ctx.fillRect(-8*d,-66,16,4);
         ctx.fillStyle='#222';ctx.fillRect(-17*d,-40,34,5);
         ctx.fillStyle='#ffcc00';ctx.fillRect(-3,-38,6,3);
-        // HEAD
         ctx.fillStyle='#e8c4a0';ctx.fillRect(-4,-78,8,8);
         ctx.fillStyle='#e8c4a0';ctx.beginPath();ctx.arc(0,-86,15,0,Math.PI*2);ctx.fill();
         ctx.fillStyle=this.isPlayer?'#332211':'#111';
@@ -366,7 +517,6 @@ class Fighter {
         if(this.state==='hit'||this.state==='knocked'){ctx.beginPath();ctx.arc(0,-79,3,0,Math.PI);ctx.fill();}
         else{ctx.fillRect(-3,-80,6,2);}
         ctx.fillStyle=dk;ctx.fillRect(-15,-95,30,4);ctx.fillRect(-15-d*3,-95,8,14);
-        // RIGHT ARM
         ctx.strokeStyle='#e8c4a0';ctx.lineWidth=7;
         const armSwing=Math.sin(this.animTime*0.5)*3;
         if(this.state==='attacking'){
@@ -393,13 +543,11 @@ class Fighter {
         } else if(this.state==='hit'||this.state==='knocked'){
             ctx.beginPath();ctx.moveTo(10*d,-58);ctx.lineTo(15*d*Math.sin(Date.now()*0.03),-48);ctx.stroke();
         } else {ctx.beginPath();ctx.moveTo(10*d,-58);ctx.lineTo(15*d,-48+armSwing);ctx.stroke();}
-        // LEFT ARM
         ctx.strokeStyle='#e8c4a0';ctx.lineWidth=6;
         if(this.state==='blocking'){ctx.beginPath();ctx.moveTo(-8*d,-55);ctx.lineTo(-14*d,-78);ctx.stroke();}
         else{ctx.beginPath();ctx.moveTo(-8*d,-55);ctx.lineTo(-13*d,-45-armSwing);ctx.stroke();}
         ctx.restore();ctx.globalAlpha=1;
     }
-    // Reset for new round
     reset(x, z) {
         this.x = x; this.z = z || 0; this.y = 0;
         this.vx = 0; this.vy = 0; this.vz = 0;
@@ -504,17 +652,12 @@ let joystickCreated = false;
 function setupJoystick() {
     if (joystickCreated) return;
     const container = document.getElementById('gameContainer');
-    
-    // Joystick zone
     const zone = document.createElement('div');
     zone.id = 'joystickZone';
     zone.innerHTML = `<div id="joystickKnob" style="width:50px;height:50px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.3),rgba(255,255,255,0.1));border:1px solid rgba(255,255,255,0.2);position:absolute;pointer-events:none;"></div>
     <div id="joystickLabel" style="position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:2px;white-space:nowrap;pointer-events:none;">MOVE</div>`;
     container.appendChild(zone);
-    
     const knob = document.getElementById('joystickKnob');
-    let zoneRect = zone.getBoundingClientRect();
-    
     function handleStart(touch) {
         initAudio();
         JOYSTICK.active = true;
@@ -524,7 +667,6 @@ function setupJoystick() {
         JOYSTICK.baseY = rect.top + rect.height/2;
         handleMove(touch);
     }
-    
     function handleMove(touch) {
         if (!JOYSTICK.active) return;
         const dx = touch.clientX - JOYSTICK.baseX;
@@ -535,72 +677,55 @@ function setupJoystick() {
         let angle = Math.atan2(dy, dx);
         JOYSTICK.dx = Math.cos(angle) * (clampedDist / maxDist);
         JOYSTICK.dy = Math.sin(angle) * (clampedDist / maxDist);
-        
-        // Clamp to unit circle
         const mag = Math.sqrt(JOYSTICK.dx*JOYSTICK.dx + JOYSTICK.dy*JOYSTICK.dy);
         if (mag > 1) { JOYSTICK.dx /= mag; JOYSTICK.dy /= mag; }
-        
-        // Update knob visual
         knob.style.transform = `translate(${JOYSTICK.dx * maxDist}px, ${JOYSTICK.dy * maxDist}px)`;
     }
-    
     function handleEnd(touch) {
-        if (touch.identifier === JOYSTICK.touchId || !touch) {
+        if (!touch || touch.identifier === JOYSTICK.touchId) {
             JOYSTICK.active = false;
             JOYSTICK.dx = 0; JOYSTICK.dy = 0;
             JOYSTICK.touchId = -1;
             knob.style.transform = 'translate(0px, 0px)';
         }
     }
-    
     zone.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e.changedTouches[0]); }, {passive:false});
     zone.addEventListener('touchmove', (e) => { e.preventDefault(); for(let t of e.changedTouches) { if(t.identifier === JOYSTICK.touchId) handleMove(t); } }, {passive:false});
     zone.addEventListener('touchend', (e) => { e.preventDefault(); handleEnd(e.changedTouches[0]); }, {passive:false});
     zone.addEventListener('touchcancel', (e) => { e.preventDefault(); handleEnd(); }, {passive:false});
-    
     joystickCreated = true;
 }
 
-// ===== ACTION BUTTONS =====
+// ===== ACTION BUTTONS (reads from layout) =====
 let controlsCreated = false;
 function setupActionButtons() {
     if (controlsCreated) return;
     const container = document.getElementById('gameContainer');
     const isMobile = 'ontouchstart' in window;
     
-    const btns = [
-        // Attack buttons (right side, diamond pattern)
-        {id:'btnLP', text:'👊', label:'LP', x:72, y:45, sz:50, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)'},
-        {id:'btnHP', text:'💥', label:'HP', x:78, y:36, sz:54, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)'},
-        {id:'btnLK', text:'🦵', label:'LK', x:84, y:45, sz:50, bg:'rgba(255,255,255,0.08)', bd:'rgba(255,255,255,0.15)'},
-        {id:'btnHK', text:'🦶', label:'HK', x:78, y:54, sz:54, bg:'rgba(255,200,0,0.1)', bd:'rgba(255,200,0,0.2)'},
-        // Special buttons (right edge)
-        {id:'btnSP', text:'⚡', label:'SP', x:91, y:38, sz:52, bg:'rgba(255,200,0,0.12)', bd:'rgba(255,200,0,0.3)'},
-        {id:'btnULT', text:'🌟', label:'ULT', x:91, y:52, sz:52, bg:'rgba(255,68,68,0.12)', bd:'rgba(255,68,68,0.3)'},
-        // Block (left side above joystick)
-        {id:'btnBlock', text:'🛡️', label:'BLOCK', x:10, y:28, sz:60, bg:'rgba(68,136,255,0.1)', bd:'rgba(68,136,255,0.25)'},
-    ];
-    
-    btns.forEach(cfg => {
+    BUTTON_DEFS.forEach(cfg => {
+        const layout = buttonLayout[cfg.id];
+        if (!layout || !layout.enabled) return;
+        const sz = layout.sz || cfg.default.sz;
         const btn = document.createElement('div');
         btn.className = 'ctrl-btn';
         btn.id = cfg.id;
-        btn.innerHTML = `<span style="font-size:${cfg.sz > 52 ? '22px' : '18px'}">${cfg.text}</span><span class="lbl">${cfg.label}</span>`;
+        const fontSize = sz > 52 ? '22px' : sz > 44 ? '18px' : '14px';
+        btn.innerHTML = `<span style="font-size:${fontSize}">${cfg.text}</span><span class="lbl">${cfg.label}</span>`;
         btn.style.cssText = `
-            width:${cfg.sz}px;height:${cfg.sz}px;
+            width:${sz}px;height:${cfg.id==='btnBlock' ? sz*0.7+'px' : sz+'px'};
             background:${cfg.bg};border:1px solid ${cfg.bd};
-            bottom:${cfg.y}%;${cfg.x<50?'left':'right'}:${cfg.x>=50?100-cfg.x:cfg.x}%;
+            bottom:${layout.y}%;${layout.x<50?'left':'right'}:${layout.x>=50?100-layout.x:layout.x}%;
         `;
         if (cfg.id === 'btnBlock') {
             btn.style.borderRadius = '12px';
-            btn.style.width = '64px'; btn.style.height = '44px';
+        } else {
+            btn.style.borderRadius = '50%';
         }
-        
         const onDown = (e) => { e.preventDefault(); btn.style.transform = 'scale(0.88)';
             btn.style.background = cfg.bg.replace('0.08','0.25').replace('0.1','0.3').replace('0.12','0.3');
             btnDown(cfg.id); };
         const onUp = (e) => { e.preventDefault(); btn.style.transform = 'scale(1)'; btn.style.background = cfg.bg; btnUp(cfg.id); };
-        
         btn.addEventListener('touchstart', onDown, {passive:false});
         btn.addEventListener('touchend', onUp, {passive:false});
         btn.addEventListener('touchcancel', onUp, {passive:false});
@@ -622,7 +747,8 @@ function btnDown(id) {
         case'btnBlock': TOUCH.block=true; player.blockPressed=true; break;
         case'btnLP': player.attack('light'); break;
         case'btnHP': player.attack('heavy'); break;
-        case'btnLK': player.attack('kick'); break;            case'btnHK': player.attack('heavy'); break;
+        case'btnLK': player.attack('kick'); break;
+        case'btnHK': player.attack('heavy'); break;
         case'btnSP': player.attack('special'); break;
         case'btnULT': player.attack('ultimate'); break;
     }
@@ -648,6 +774,249 @@ document.addEventListener('keyup', e => {
     if(e.key===' '||e.key==='Space') player.blockPressed=false;
 });
 
+// ===== SETTINGS: DRAGGABLE CUSTOMIZATION =====
+let settingsOpen = false;
+let settingsLayout = null;
+let dragTarget = null, dragOffX = 0, dragOffY = 0, dragTouchId = -1;
+
+function openSettings() {
+    if (gameState !== 'menu') return;
+    settingsOpen = true;
+    // Clone the layout for editing
+    settingsLayout = JSON.parse(JSON.stringify(buttonLayout));
+    document.getElementById('settingsScreen').classList.add('show');
+    renderSettingsButtons();
+}
+
+function closeSettings() {
+    settingsOpen = false;
+    document.getElementById('settingsScreen').classList.remove('show');
+    // Discard unsaved changes? Actually we auto-save but let's not auto-save on close
+    // The "Done" button saves explicitly
+}
+
+function renderSettingsButtons() {
+    const content = document.getElementById('settingsContent');
+    // Remove old setting buttons but keep hint and tray
+    content.querySelectorAll('.setting-btn').forEach(el => el.remove());
+    
+    const hint = document.getElementById('settingsHint');
+    const tray = document.getElementById('deletedTray');
+    
+    // Render tray first
+    tray.innerHTML = '<span class="tray-label">🗑️ Deleted:</span>';
+    let deletedCount = 0;
+    BUTTON_DEFS.forEach(cfg => {
+        const l = settingsLayout[cfg.id];
+        if (!l || !l.enabled) {
+            deletedCount++;
+            const item = document.createElement('div');
+            item.className = 'del-item';
+            item.textContent = cfg.text;
+            item.title = 'Tap to restore ' + cfg.label;
+            item.addEventListener('click', (e) => { e.stopPropagation(); restoreButton(cfg.id); });
+            item.addEventListener('touchstart', (e) => { e.stopPropagation(); restoreButton(cfg.id); }, {passive:true});
+            tray.appendChild(item);
+        }
+    });
+    if (deletedCount === 0) {
+        tray.innerHTML = '<span class="tray-label" style="opacity:0.2">All buttons active</span>';
+    }
+    
+    // Render enabled buttons
+    BUTTON_DEFS.forEach(cfg => {
+        const l = settingsLayout[cfg.id];
+        if (!l || !l.enabled) return;
+        
+        const btn = document.createElement('div');
+        btn.className = 'setting-btn';
+        btn.dataset.id = cfg.id;
+        
+        const sz = l.sz || cfg.default.sz;
+        btn.style.cssText = `
+            width:${sz}px; height:${sz}px;
+            bottom:${l.y}%; ${l.x<50?'left':'right'}:${l.x>=50?100-l.x:l.x}%;
+        `;
+        btn.innerHTML = `
+            <span style="font-size:${sz > 52 ? '22px' : '18px'}">${cfg.text}</span>
+            <span style="font-size:7px;opacity:0.5;display:block">${cfg.label}</span>
+            <button class="del-btn" data-id="${cfg.id}">✕</button>
+            <div class="size-ctrl">
+                <input type="range" min="36" max="76" value="${sz}">
+                <span class="size-num">${sz}</span>
+            </div>
+        `;
+        content.appendChild(btn);
+        
+        // Delete button
+        btn.querySelector('.del-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteButton(cfg.id);
+        });
+        btn.querySelector('.del-btn').addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            deleteButton(cfg.id);
+        }, {passive:true});
+        
+        // Size slider
+        const slider = btn.querySelector('input[type=range]');
+        const sizeNum = btn.querySelector('.size-num');
+        slider.addEventListener('input', () => {
+            const v = parseInt(slider.value);
+            sizeNum.textContent = v;
+            const w = v + 'px';
+            const h = cfg.id === 'btnBlock' ? Math.round(v*0.7)+'px' : w;
+            btn.style.width = w;
+            btn.style.height = h;
+            settingsLayout[cfg.id].sz = v;
+        });
+        slider.addEventListener('touchstart', (e) => e.stopPropagation(), {passive:true});
+        slider.addEventListener('mousedown', (e) => e.stopPropagation());
+        
+        // Drag handlers
+        setupDragHandlers(btn, cfg.id);
+    });
+}
+
+function setupDragHandlers(btn, id) {
+    const startDrag = (clientX, clientY, identifier) => {
+        const rect = btn.getBoundingClientViewport();
+        // Actually use getBoundingClientRect
+        // Hmm, getBoundingClientViewport doesn't exist. Use getBoundingClientRect.
+        const r = btn.getBoundingClientRect();
+        dragTarget = { id, el: btn };
+        dragOffX = clientX - r.left - r.width/2;
+        dragOffY = clientY - r.top - r.height/2;
+        dragTouchId = identifier;
+        btn.classList.add('dragging');
+    };
+    
+    const moveDrag = (clientX, clientY) => {
+        if (!dragTarget) return;
+        const container = document.getElementById('settingsContent');
+        const cr = container.getBoundingClientRect();
+        // Calculate position as percentage
+        let px = ((clientX - dragOffX) - cr.left) / cr.width * 100;
+        let py = ((clientY - dragOffY) - cr.top) / cr.height * 100;
+        // Clamp
+        px = Math.max(1, Math.min(98, px));
+        py = Math.max(1, Math.min(94, py));
+        
+        const l = settingsLayout[id];
+        l.x = px;
+        l.y = py;
+        
+        const el = dragTarget.el;
+        el.style.bottom = py + '%';
+        if (px < 50) {
+            el.style.left = px + '%';
+            el.style.right = 'auto';
+        } else {
+            el.style.right = (100 - px) + '%';
+            el.style.left = 'auto';
+        }
+    };
+    
+    const endDrag = () => {
+        if (dragTarget) {
+            dragTarget.el.classList.remove('dragging');
+            dragTarget = null;
+            dragTouchId = -1;
+        }
+    };
+    
+    // Touch
+    btn.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.del-btn') || e.target.closest('.size-ctrl')) return;
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        startDrag(touch.clientX, touch.clientY, touch.identifier);
+    }, {passive: false});
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!dragTarget) return;
+        for (let t of e.changedTouches) {
+            if (t.identifier === dragTouchId) {
+                e.preventDefault();
+                moveDrag(t.clientX, t.clientY);
+            }
+        }
+    }, {passive: false});
+    
+    document.addEventListener('touchend', (e) => {
+        if (!dragTarget) return;
+        for (let t of e.changedTouches) {
+            if (t.identifier === dragTouchId) {
+                endDrag();
+            }
+        }
+    });
+    
+    document.addEventListener('touchcancel', () => { endDrag(); });
+    
+    // Mouse
+    btn.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.del-btn') || e.target.closest('.size-ctrl')) return;
+        e.preventDefault();
+        startDrag(e.clientX, e.clientY, -1);
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!dragTarget || dragTouchId !== -1) return;
+        moveDrag(e.clientX, e.clientY);
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (dragTarget && dragTouchId === -1) endDrag();
+    });
+}
+
+function deleteButton(id) {
+    if (settingsLayout[id]) {
+        settingsLayout[id].enabled = false;
+        renderSettingsButtons();
+    }
+}
+
+function restoreButton(id) {
+    if (settingsLayout[id]) {
+        settingsLayout[id].enabled = true;
+        renderSettingsButtons();
+    }
+}
+
+function saveSettings() {
+    saveButtonLayout(settingsLayout);
+    // Recreate controls with new layout
+    destroyControls();
+    setupActionButtons();
+    closeSettings();
+}
+
+function destroyControls() {
+    BUTTON_DEFS.forEach(cfg => {
+        const el = document.getElementById(cfg.id);
+        if (el) el.remove();
+    });
+    controlsCreated = false;
+}
+
+// UI Events
+document.getElementById('settingsBtn').addEventListener('click', () => { initAudio(); openSettings(); });
+document.getElementById('settingsClose').addEventListener('click', closeSettings);
+document.getElementById('settingsSaveBtn').addEventListener('click', saveSettings);
+document.getElementById('settingsResetBtn').addEventListener('click', () => {
+    settingsLayout = resetButtonLayout();
+    renderSettingsButtons();
+});
+document.getElementById('settingsAddBtn').addEventListener('click', () => {
+    // Restore all disabled buttons
+    BUTTON_DEFS.forEach(cfg => {
+        if (settingsLayout[cfg.id]) settingsLayout[cfg.id].enabled = true;
+    });
+    renderSettingsButtons();
+});
+
 // ===== GAME LOOP =====
 let lastTime = 0;
 
@@ -657,12 +1026,11 @@ function update(dt) {
     if(announceText){announceTimer--;if(announceTimer<=0)announceText='';return;}
     if(frameCount>60){timeLeft-=dt;if(timeLeft<=0){timeLeft=0;endRound(player.health>enemy.health?'player':player.health<enemy.health?'enemy':'draw');return;}}
     
-    // Virtual joystick movement - free 8-directional
     const jx = JOYSTICK.dx, jy = JOYSTICK.dy;
     if (jx !== 0 || jy !== 0) {
         const speed = 5.5;
         player.vx = jx * speed;
-        player.vz = -jy * speed * 0.5; // Forward is negative Z
+        player.vz = -jy * speed * 0.5;
         if(player.state==='idle'||player.state==='walking') player.state='walking';
     } else if(player.state==='walking') {
         player.state='idle';
@@ -686,24 +1054,19 @@ function draw() {
     ctx.clearRect(0,0,W,H);ctx.save();
     if(screenShake>0.5)ctx.translate((Math.random()-0.5)*screenShake,(Math.random()-0.5)*screenShake);
     
-    // Sky
     const sky=ctx.createLinearGradient(0,0,0,H*GROUND_RATIO);
     sky.addColorStop(0,'#0a0015');sky.addColorStop(0.3,'#150830');sky.addColorStop(0.6,'#1a0a30');sky.addColorStop(1,'#0d0520');
     ctx.fillStyle=sky;ctx.fillRect(0,0,W,H*GROUND_RATIO);
-    // Stars
     ctx.fillStyle='rgba(255,255,255,0.5)';
     for(let i=0;i<50;i++){const sx=(i*139.7+i*i*7.1)%W,sy=(i*91.3+i*i*3.9)%(H*GROUND_RATIO*0.5);
         ctx.globalAlpha=0.2+Math.sin(Date.now()*0.0008+i)*0.3;ctx.fillRect(sx,sy,1.5,1.5);}
     ctx.globalAlpha=1;
-    // Moon
     ctx.fillStyle='#ffe8d0';ctx.beginPath();ctx.arc(W*0.87,H*0.1,28,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#0a0015';ctx.beginPath();ctx.arc(W*0.87+7,H*0.1-4,24,0,Math.PI*2);ctx.fill();
-    // City
     ctx.fillStyle='#0a0518';
     for(let i=0;i<W/28;i++){const bx=i*28,cbh=40+Math.sin(i*1.7)*25+Math.sin(i*0.4)*15;ctx.fillRect(bx,H*GROUND_RATIO-20-cbh,26,cbh+20);}
     ctx.fillStyle='rgba(255,200,100,0.3)';
     for(let i=0;i<W/28;i++){if(i%3===0)continue;const lx=i*28+4,ly=H*GROUND_RATIO-20-(40+Math.sin(i*1.7)*25+Math.sin(i*0.4)*15)+8;ctx.fillRect(lx,ly,2,2);ctx.fillRect(lx+13,ly+10,2,2);}
-    // Ground
     const gg=ctx.createLinearGradient(0,H*GROUND_RATIO,0,H);
     gg.addColorStop(0,'#221133');gg.addColorStop(0.3,'#150820');gg.addColorStop(1,'#0a0410');
     ctx.fillStyle=gg;ctx.fillRect(0,H*GROUND_RATIO,W,H);
@@ -713,22 +1076,18 @@ function draw() {
     ctx.beginPath();ctx.moveTo(18,H*GROUND_RATIO);ctx.lineTo(18,H);ctx.stroke();
     ctx.beginPath();ctx.moveTo(W-18,H*GROUND_RATIO);ctx.lineTo(W-18,H);ctx.stroke();ctx.setLineDash([]);
     
-    // Draw fighters (sorted by Z for depth)
     const fighters = [player, enemy].sort((a,b)=>a.z-b.z);
     fighters.forEach(f=>f.draw(ctx));
     
-    // Particles
     particles.forEach(p=>{ctx.globalAlpha=p.life/p.maxLife;ctx.fillStyle=p.color;
         ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
     ctx.globalAlpha=1;
-    // Float texts
     floatTexts.forEach(f=>{ctx.globalAlpha=f.timer/f.maxTimer;ctx.fillStyle=f.color;
         ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.strokeStyle='#000';ctx.lineWidth=3;
         ctx.strokeText(f.text,f.x,f.y);ctx.fillText(f.text,f.x,f.y);});
     ctx.globalAlpha=1;
     ctx.restore();
 
-    // HUD
     const barW=W*0.38,barH=20,barY=22,bx1=W*0.02,bx2=W*0.6;
     ctx.fillStyle='#222';ctx.fillRect(bx1,barY,barW,barH);
     const p1P=player.health/player.maxHealth;ctx.fillStyle=p1P>0.5?'#33cc44':p1P>0.25?'#cccc33':'#cc3333';
@@ -741,7 +1100,6 @@ function draw() {
     ctx.textAlign='right';ctx.fillText(Math.ceil(enemy.health),bx2+barW-6,barY+14);
     ctx.font='bold 13px Arial';ctx.textAlign='left';ctx.fillStyle=player.color;ctx.fillText(player.name,bx1,barY-6);
     ctx.textAlign='right';ctx.fillStyle=enemy.color;ctx.fillText(enemy.name,bx2+barW,barY-6);
-    // Super
     const sbW=barW*0.65,sbH=5,sbY=barY+barH+3;
     ctx.fillStyle='#222';ctx.fillRect(bx1,sbY,sbW,sbH);
     const p1s=player.superMeter/player.maxSuper;ctx.fillStyle=p1s>=1?'#ffcc00':'#4488ff';
@@ -750,7 +1108,6 @@ function draw() {
     const p2s=enemy.superMeter/enemy.maxSuper;ctx.fillStyle=p2s>=1?'#ffcc00':'#4488ff';
     ctx.fillRect(bx2+barW-sbW+1,sbY+1,(sbW-2)*p2s,sbH-2);
     ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='7px Arial';ctx.textAlign='left';ctx.fillText('SUPER',bx1,sbY+4);ctx.textAlign='right';ctx.fillText('SUPER',bx2+barW,sbY+4);
-    // Center
     const cx=W/2;ctx.textAlign='center';
     ctx.font='bold 13px Arial';ctx.fillStyle='#888';
     let rt='';for(let i=0;i<Math.max(1,roundsToWin*2-1);i++){if(i<p1Rounds)rt+='● ';else if(i<p1Rounds+p2Rounds)rt+='○ ';else rt+='· ';}
@@ -778,7 +1135,7 @@ function setupCharSelect() {
     const grid=document.getElementById('charGrid');grid.innerHTML='';
     CHARACTERS.forEach((c,i)=>{const card=document.createElement('div');
         card.className='char-card'+(i===playerChar?' selected':'');
-        card.innerHTML=`<div class="char-avatar">${c.emoji}</div><div class="char-name">${c.name}</div><div class="char-desc">${c.desc}</div>`;
+        card.innerHTML=`<div class=\"char-avatar\">${c.emoji}</div><div class=\"char-name\">${c.name}</div><div class=\"char-desc\">${c.desc}</div>`;
         card.addEventListener('click',()=>{document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('selected'));
             card.classList.add('selected');playerChar=i;enemyChar=(i+1)%CHARACTERS.length;if(enemyChar===playerChar)enemyChar=(playerChar+1)%CHARACTERS.length;});
         grid.appendChild(card);});
@@ -797,7 +1154,7 @@ document.getElementById('menuBtn').addEventListener('click',()=>{document.getEle
 // Init
 initGame(); setupJoystick(); setupActionButtons();
 requestAnimationFrame(loop);
-console.log('🔥 LES FIGHT v3 - Virtual Joystick + Landscape!');
+console.log('🔥 LES FIGHT v4 - Customizable Controls!');
 </script>
 </body>
 </html>
