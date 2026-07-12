@@ -10,8 +10,6 @@ A 3D fighting game built with **Unreal Engine 5.4** — also available as a **We
 
 Just tap the link above! Opens instantly on **any phone or computer**. No app, no download, no signup.
 
-**GitHub Pages** (if active): https://mahuvechriss.github.io/Lesfight/
-
 ---
 
 ### 📱 Touch Controls (Mobile)
