@@ -880,9 +880,6 @@ function renderSettingsButtons() {
 
 function setupDragHandlers(btn, id) {
     const startDrag = (clientX, clientY, identifier) => {
-        const rect = btn.getBoundingClientViewport();
-        // Actually use getBoundingClientRect
-        // Hmm, getBoundingClientViewport doesn't exist. Use getBoundingClientRect.
         const r = btn.getBoundingClientRect();
         dragTarget = { id, el: btn };
         dragOffX = clientX - r.left - r.width/2;
