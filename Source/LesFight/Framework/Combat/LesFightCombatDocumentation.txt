@@ -1,0 +1,92 @@
+=== MODULE 4: COMBAT SYSTEM ===
+Location: H:\LesFight\Source\LesFight\Framework\Combat\
+Total Files: 34 (including Data/ subfolder)
+
+=== ARCHITECTURE ===
+
+1. CombatComponent (LesFightCombatComponent.h/.cpp)
+   - Core component attached to each fighter
+   - Orchestrates all combat subsystems
+   - Manages attack execution with startup/active/recovery frame timing
+   - Handles input buffering, cooldowns, stamina consumption
+   - Exposes delegates: OnAttackStarted, OnAttackHit, OnAttackMissed,
+     OnAttackRecovered, OnComboUpdated, OnComboBroken, OnFighterHit,
+     OnRoundStartEvent, OnRoundEndEvent
+
+2. Data Structures (Data/)
+   - LesFightAttackData.h: Attack types, frame data, damage data,
+     properties, hitbox/hurtbox shapes
+   - LesFightComboData.h: Combo entries/definitions, special/ultimate
+     move definitions, ULesFightCombatDataAsset fighter data asset
+
+3. Sub-Managers
+   - LesFightComboManager: Combo tracking, scaling, cancel validation
+   - LesFightDamageManager: Damage calculation, scaling, crits,
+     hitstun/blockstun duration, damage results
+   - LesFightHitDetection: Hitbox collision, hurtbox checking,
+     throw range checking, debug drawing
+   - LesFightInputBuffer: Input queuing with timing window,
+     FIFO buffer with expiration
+
+4. Defense Components
+   - LesFightBlockingComponent: Standing/crouching/air block states,
+     guard meter with regen, guard break/crush, chip damage, pushback
+   - LesFightDodgeComponent: Forward/back dashes, side steps,
+     invulnerability frames, dodge cooldown
+   - LesFightThrowComponent: Throw startup/active/recovery,
+     tech windows, throw breaking
+
+5. Special Systems
+   - LesFightSpecialMoveComponent: Move registration, input detection,
+     meter management, cooldown tracking
+   - LesFightUltimateMoveComponent: Super meter builds to 100%,
+     cinematic mode, meter consumption
+
+6. Hit Reaction System (LesFightReactionSystem)
+   - States: None, Hitstun, Blockstun, Knockback, Knockdown,
+     Getup, Launched, Airborne, Staggered, Frozen
+   - Applies physics forces (knockback, launch)
+   - Triggers state transitions and timers
+
+7. Combat Effects (LesFightCombatEffects)
+   - Per-reaction-type VFX (Niagara/legacy particles)
+   - Hit sounds, camera shakes, hitstop (time dilation)
+   - Configurable via data tables
+
+8. Orchestration (LesFightCombatManager)
+   - Manages active/defeated fighter lists
+   - Round start/end lifecycle
+   - Match point detection
+   - Delegates: OnRoundStart, OnRoundEnd, OnMatchPoint, OnFighterKOd
+
+9. Integration Layers
+   - LesFightCombatHUDIntegrator: Connects combat events to
+     ULesFightUIManager and ULesFightHUD
+   - LesFightCombatAudioHandler: Plays combat SFX through
+     ULesFightAudioManager
+
+10. Debug & Testing (LesFightCombatDebugger)
+    - God mode, infinite health/meter
+    - Hitbox/hurtbox visualization
+    - Frame data overlay
+    - Combat log with damage events
+    - Spawn debug fighters
+
+=== KEY DESIGN DECISIONS ===
+
+- Frame timing: 60fps fixed (1/60s per frame)
+- Attack phases: Startup [no hitbox] -> Active [hitbox active] ->
+  Recovery [can't act]
+- Combo scaling: Starts at 1.0, reduces by 0.1 per hit (min 0.1)
+- Input buffer: 150ms window, max 10 queued inputs
+- Guard meter: 100 max, regens 15/s after 1s delay
+- Block damage: 25% chip damage
+- Super meter: builds to 100 for ultimates
+- Hitstop: 100ms on hit
+
+=== INTEGRATION POINTS ===
+
+- Fighter spawn: CombatManager::RegisterFighter() adds CombatComponent
+- HUD: CombatHUDIntegrator::Initialize(CombatComp, UIMgr)
+- Audio: CombatAudioHandler::Initialize(CombatComp, AudioMgr)
+- Input: Call CombatComponent methods from InputProcessor

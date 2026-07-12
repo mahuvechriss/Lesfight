@@ -1,0 +1,129 @@
+=== MODULE 5: ANIMATION & MOTION SYSTEM ===
+Location: H:\LesFight\Source\LesFight\Framework\Animation\
+Total Files: 28 (including Data/ subfolder)
+
+=== ARCHITECTURE ===
+
+1. Data Layer
+   - LesFightAnimationData.h: All enums (ELocomotionState, ECombatAnimType,
+     EHitReactionAnimType, EAnimationLayer, EBlendSpaceType, EMotionWarpTarget,
+     EIKType, ERootMotionMode, EAnimTransitionMethod, EFacialExpression,
+     EAnimationQuality), structs (FAnimSlotInfo, FAnimTransitionRule,
+     FAnimBlendEntry, FLocomotionAnimSet, FCombatAnimSet, FMotionWarpTargetData,
+     FIKChainSetup, FAnimationMontageData), and ULesFightAnimationDataAsset
+
+2. Core Systems
+   - LesFightAnimationManager: Global animation orchestration. Registers all
+     fighters, sets global quality/play rate, manages slow-motion, pauses
+   - LesFightAnimBlueprintBase: Base AnimInstance class. All fighters use this.
+     Exposes locomotion/combat/reaction states, montage playback, additives,
+     facial expressions, root motion toggling
+   - LesFightCharacterAnimationComponent: Per-fighter animation orchestrator.
+     Owns 11 sub-systems: StateMachine, LayerSystem, EventManager,
+     LocomotionSystem, CombatAnimHandler, BlendingSystem, RootMotionHandler,
+     MotionWarpingSystem, IKSystem, HitReactionAnimation, FacialSystem.
+     Updated automatically in Tick()
+   - LesFightAnimationStateMachine: FSM with named states, transition rules,
+     blend times, interruption logic. States registered from data asset
+   - LesFightAnimationLayerSystem: Upper/lower body separation with per-layer
+     weights and blending. Supports BasePose, Locomotion, UpperBody, LowerBody,
+     FullBody, Overlay, Additive, Facial layers
+   - LesFightAnimationEventManager: Registers and triggers timed animation
+     events. Exposes TriggerEvent, TriggerComboWindow, TriggerFootstep,
+     TriggerHitEvent, TriggerSoundEvent, TriggerCameraShake, TriggerEffectEvent
+
+3. Locomotion
+   - LesFightLocomotionSystem: Full 18-state locomotion: Idle (with variations),
+     Walk, Jog, Sprint, TurnLeft/Right, Start/StopMoving, Crouch/CrouchWalk,
+     JumpStart/Loop/Land, Falling, Recovery. Smooth speed/direction blending,
+     idle variation timer, turn-in-place detection
+
+4. Combat Animation
+   - LesFightCombatAnimHandler: Plays attack montages, block/perfect block,
+     dodge, throw/being thrown, victory, defeat, taunt animations. Integrates
+     with CombatComponent for attack lookup
+
+5. Blending System
+   - LesFightBlendingSystem: Queue-based blend processor. Supports StandardBlend,
+     Inertialization, CustomCurve, Snap methods. Max 4 concurrent blends.
+     Quality-scalable blend speeds
+
+6. Root Motion
+   - LesFightRootMotionHandler: Full/partial translation/rotation root motion
+     with multipliers. Accumulates and applies root motion from animations.
+     Supports snapshot/restore for precise positioning. Integrates with
+     CharacterMovementComponent
+
+7. Motion Warping
+   - LesFightMotionWarpingSystem: Dynamic position/rotation correction during
+     animations. Target types: TargetActor, TargetLocation, ThrowDirection,
+     FinisherTarget, WallBounce, GroundPosition, Custom. Per-warp progress
+     tracking with configurable speed and distance limits
+
+8. IK System
+   - LesFightIKSystem: Two-foot IK with ground tracing, foot locking, pelvis
+     offset. Hand IK framework for future weapon/prop support. Ground adaptation
+     for uneven terrain. Trace-based foot placement with interpolation.
+     Quality-scalable (disabled at Low, hand-only at Medium, full at High+)
+
+9. Hit Reaction Animation
+   - LesFightHitReactionAnimation: Per-bone hit reactions (HeadHit, BodyHit,
+     LegHit, AirHit, HeavyImpact, Knockback, Launch, WallImpact, GroundImpact,
+     Stagger, LightStun, HeavyStun). Damage-threshold-based reaction selection.
+     Queueing for overlapping reactions
+
+10. Facial Animation
+    - LesFightFacialAnimationSystem: 10 expressions (Neutral, Happy, Angry,
+      Sad, Surprised, Pained, Determined, Taunting, Focused, Defeated).
+      Automatic blinking with random interval (2-6s). Eye tracking toward
+      target opponent. Lip sync hooks with duration-based blend
+
+11. Cinematic Animation
+    - LesFightCinematicAnimationHandler: Character introductions, match start,
+      ultimate attack sequences, victory celebrations, defeat sequences, slow
+      motion moments. Integrates with LevelSequence for cinematic cameras
+
+12. Camera Sync
+    - LesFightAnimationCameraSync: Dynamic combat zoom, impact zoom,
+      cinematic camera control. FOV-based zoom system with interpolation
+
+13. Audio Sync
+    - LesFightAnimationAudioSync: Triggered footstep, punch, kick, clothing,
+      landing, whoosh sounds. Integrates with per-character audio component.
+      Event-driven audio registration system
+
+14. Debug & Performance
+    - LesFightAnimationDebugger: Live animation state overlay, blend space
+      visualization, root motion paths, notify inspection, frame time history
+      (120 samples). Slow-motion and pause modes
+    - LesFightAnimationPerformance: Budget tracking (5ms default), automatic
+      LOD (Near/Medium/Far distance thresholds), quality scaling on over-budget.
+      Per-component frame time monitoring
+
+15. Animation Notifies
+    - 9 custom notify types: Footstep, Hit, Sound, CameraShake, VFX,
+      ComboWindow (state), UltimateTrigger, RootMotion, MotionWarp (state)
+    - Each notify broadcasts through CharacterAnimationComponent events
+
+=== KEY DESIGN VALUES ===
+
+- Locomotion blend speed: 8.0 (speed), 6.0 (direction)
+- Idle variation interval: 5s
+- Turn threshold: 90 degrees
+- IK trace distance: 50cm, blend speed: 8.0
+- Root motion mode: Full (configurable per animation)
+- Motion warp speed: 5.0, max distance: 200cm, max angle: 90deg
+- Animation budget: 5ms per frame
+- LOD distances: 500/1500/3000 units
+- Expression blend: 0.3s default
+- Blink interval: 2-6s random
+- Eye tracking speed: 5.0
+
+=== INTEGRATION POINTS ===
+
+- BaseFighter: Creates CharacterAnimComponent via CreateDefaultSubobject,
+  initializes in BeginPlay with DefaultAnimationData asset
+- CombatComponent: Provides attack data - CombatAnimHandler looks up montages
+  from FCombatAnimSet
+- ULesFightAnimBlueprintBase: The AnimInstance all fighter ABPs should use
+- GameInstance: Create ULesFightAnimationManager for global control

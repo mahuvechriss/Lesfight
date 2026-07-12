@@ -1,0 +1,109 @@
+#include "Framework/Release/Documentation/LesFightTechnicalDocGenerator.h"
+#include "Misc/FileHelper.h"
+
+void ULesFightTechnicalDocGenerator::Initialize() { TechDocSections.Empty(); }
+void ULesFightTechnicalDocGenerator::Shutdown() { TechDocSections.Empty(); }
+
+FString ULesFightTechnicalDocGenerator::GenerateArchitectureSection()
+{
+	FString Section;
+	Section += TEXT("# System Architecture\n\n");
+	Section += TEXT("## Overview\n\n");
+	Section += TEXT("LesFight is built on Unreal Engine 5 using a modular component-based architecture.\n");
+	Section += TEXT("The project is organized into 18 systems each following a consistent pattern:\n\n");
+	Section += TEXT("- Core Framework (Module 1)\n");
+	Section += TEXT("- Player & Movement System (Module 2)\n");
+	Section += TEXT("- Camera System (Module 3)\n");
+	Section += TEXT("- Input System (Module 4)\n");
+	Section += TEXT("- UI System (Module 5)\n");
+	Section += TEXT("- Character System (Module 6)\n");
+	Section += TEXT("- Combat System (Module 7)\n");
+	Section += TEXT("- Animation System (Module 8)\n");
+	Section += TEXT("- AI Photo-to-Character (Module 9)\n");
+	Section += TEXT("- Fighting AI (Module 10)\n");
+	Section += TEXT("- Arena System (Module 11)\n");
+	Section += TEXT("- Audio System (Module 12)\n");
+	Section += TEXT("- VFX System (Module 13)\n");
+	Section += TEXT("- UI-Integrated Systems (Module 14)\n");
+	Section += TEXT("- Data Management (Module 15)\n");
+	Section += TEXT("- Integration System (Module 16)\n");
+	Section += TEXT("- Performance Optimization (Module 17)\n");
+	Section += TEXT("- QA & Testing (Module 18)\n");
+	Section += TEXT("- Release & Deployment (Module 19)\n\n");
+	Section += TEXT("## Key Design Patterns\n\n");
+	Section += TEXT("- Manager Pattern: Centralized managers for each system\n");
+	Section += TEXT("- Component Pattern: Reusable components for characters\n");
+	Section += TEXT("- State Machine Pattern: Animation and AI state management\n");
+	Section += TEXT("- Observer Pattern: Event-based communication between systems\n");
+	Section += TEXT("- Data-Driven Design: Data assets for configurable content\n");
+	return Section;
+}
+
+FString ULesFightTechnicalDocGenerator::GenerateDevelopmentNotes()
+{
+	FString Section;
+	Section += TEXT("# Development Notes\n\n");
+	Section += TEXT("## Build Process\n\n");
+	Section += TEXT("1. Development builds include debug symbols and uncooked content.\n");
+	Section += TEXT("2. QA builds include optimization but retain debug tools.\n");
+	Section += TEXT("3. Release builds are fully optimized and compressed.\n");
+	Section += TEXT("4. Shipping builds are the final player-facing builds.\n\n");
+	Section += TEXT("## Key Directories\n\n");
+	Section += TEXT("- Source/LesFight/Core/: Base framework classes\n");
+	Section += TEXT("- Source/LesFight/Framework/: All gameplay systems (19 modules)\n");
+	Section += TEXT("- Content/: Game assets\n");
+	Section += TEXT("- Config/: Configuration files\n");
+	Section += TEXT("- Plugins/: Third-party and custom plugins\n\n");
+	Section += TEXT("## Dependencies\n\n");
+	Section += TEXT("- Unreal Engine 5.x\n");
+	Section += TEXT("- Visual Studio 2022 or JetBrains Rider (development)\n");
+	Section += TEXT("- DirectX 12 Runtime\n");
+	return Section;
+}
+
+FString ULesFightTechnicalDocGenerator::GenerateMaintenanceGuide()
+{
+	FString Section;
+	Section += TEXT("# Maintenance Guide\n\n");
+	Section += TEXT("## Adding New Characters\n\n");
+	Section += TEXT("1. Create character data asset in Content/Characters/Data/\n");
+	Section += TEXT("2. Add character blueprint in Content/Characters/\n");
+	Section += TEXT("3. Register in CharacterDataManager\n");
+	Section += TEXT("4. Add to character selection screen\n\n");
+	Section += TEXT("## Adding New Arenas\n\n");
+	Section += TEXT("1. Create arena level in Content/Maps/Arenas/\n");
+	Section += TEXT("2. Configure arena data asset\n");
+	Section += TEXT("3. Register in ArenaManager\n\n");
+	Section += TEXT("## Adding New Fighting Styles\n\n");
+	Section += TEXT("1. Create style data asset in Content/Combat/Styles/\n");
+	Section += TEXT("2. Implement attack data for the style\n");
+	Section += TEXT("3. Register in MartialArtsManager\n\n");
+	Section += TEXT("## Performance Optimization\n\n");
+	Section += TEXT("- Monitor FPS and memory via Performance system (Module 17)\n");
+	Section += TEXT("- Adjust quality presets in Quality subsystem\n");
+	Section += TEXT("- Run QA test suite (Module 18) after changes\n");
+	Section += TEXT("- Verify all platforms before release\n");
+	return Section;
+}
+
+FString ULesFightTechnicalDocGenerator::GenerateFullTechnicalDoc()
+{
+	FString Full;
+	Full += TEXT("# LesFight - Technical Documentation\n\n");
+	Full += TEXT("Version: 1.0.0\n\n");
+	Full += TEXT("---\n\n");
+	Full += GenerateArchitectureSection();
+	Full += TEXT("\n---\n\n");
+	Full += GenerateDevelopmentNotes();
+	Full += TEXT("\n---\n\n");
+	Full += GenerateMaintenanceGuide();
+	Full += TEXT("\n---\n\n");
+	Full += TEXT("Document generated by LesFight Release System\n");
+	return Full;
+}
+
+bool ULesFightTechnicalDocGenerator::ExportTechnicalDoc(const FString& FilePath)
+{
+	FString Content = GenerateFullTechnicalDoc();
+	return FFileHelper::SaveStringToFile(Content, *FilePath);
+}
