@@ -254,8 +254,8 @@ class Fighter {
     }
     attack(type) {
         if(this.attackCooldown>0||this.state==='hit'||this.state==='knocked') return;
-        if(type==='special'&&this.superMeter<30) return;
-        if(type==='ultimate'&&this.superMeter<100) return;
+        if(type==='special'&&this.superMeter<30){addFloat(this.x,this.y-50,'NOT ENOUGH!','#ff4444',0.6);return;}
+        if(type==='ultimate'&&this.superMeter<100){addFloat(this.x,this.y-50,'NOT ENOUGH!','#ff4444',0.6);return;}
         this.state='attacking'; this.stateTimer=18; this.attackType=type; this.attackHit=false;
         this.attackCooldown = type==='light'?10:type==='heavy'?20:type==='kick'?14:type==='special'?28:38;
         if(type==='special'){this.superMeter-=30;playSpecial();}
@@ -605,7 +605,7 @@ function btnDown(id) {
         case'lp':player.attack('light');break;
         case'hp':player.attack('heavy');break;
         case'lk':player.attack('kick');break;
-        case'hk':player.attack('heavy');break;
+        case'hk':player.attack('kick');break;
         case'special':player.attack('special');break;
         case'ult':player.attack('ultimate');break;
     }
