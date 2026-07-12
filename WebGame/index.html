@@ -209,7 +209,7 @@ let gameState = 'menu', difficulty = 'normal', roundsToWin = 2;
 let currentRound = 1, p1Rounds = 0, p2Rounds = 0;
 let frameCount = 0, timeLeft = 99;
 let announceText = '', announceTimer = 0;
-let comboCount = 0, comboTimer = 0, screenShake = 0;
+let screenShake = 0;
 let particles = [], floatTexts = [];
 let playerChar = 0, enemyChar = 1;
 
@@ -452,13 +452,13 @@ function initGame() {
     enemy.name=CHARACTERS[enemyChar].name; enemy.style=CHARACTERS[enemyChar].style;
     ai=new AI();ai.setDiff(difficulty);
     currentRound=1;p1Rounds=0;p2Rounds=0;
-    comboCount=0;comboTimer=0;particles=[];floatTexts=[];
-    timeLeft=99;frameCount=0;
+    particles=[];floatTexts=[];
+    timeLeft=99;frameCount=0;screenShake=0;
 }
 function resetRound() {
     player.reset(canvas.width*0.33, 0);
     enemy.reset(canvas.width*0.67, 0);
-    timeLeft=99;comboCount=0;comboTimer=0;particles=[];floatTexts=[];screenShake=0;
+    timeLeft=99;particles=[];floatTexts=[];screenShake=0;
     player.attackCooldown=0;enemy.attackCooldown=0;announce();
 }
 function announce(){
@@ -758,8 +758,8 @@ function draw() {
     ctx.font='bold 28px Arial';ctx.fillStyle=timeLeft<10?'#ff4444':timeLeft<30?'#ffaa00':'#fff';
     ctx.fillText(Math.ceil(timeLeft),cx,barY+barH+26);
     ctx.font='11px Arial';ctx.fillStyle='#666';ctx.fillText('ROUND '+currentRound,cx,barY-12);
-    if(comboCount>2&&comboTimer>0){ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillStyle='#ff8800';ctx.strokeStyle='#000';ctx.lineWidth=3;
-        ctx.strokeText(comboCount+' HIT COMBO!',cx,H*0.38);ctx.fillText(comboCount+' HIT COMBO!',cx,H*0.38);}
+    if(enemy.hitCount>2){ctx.font='bold 26px Arial';ctx.textAlign='center';ctx.fillStyle='#ff8800';ctx.strokeStyle='#000';ctx.lineWidth=3;
+        ctx.strokeText(enemy.hitCount+' HIT COMBO!',cx,H*0.38);ctx.fillText(enemy.hitCount+' HIT COMBO!',cx,H*0.38);}
     if(announceText){ctx.font='bold 56px Arial';ctx.textAlign='center';ctx.strokeStyle='#000';ctx.lineWidth=4;
         ctx.fillStyle=announceText==='FIGHT!'?'#ff4444':'#fff';ctx.strokeText(announceText,cx,H*0.35);ctx.fillText(announceText,cx,H*0.35);}
     if(!('ontouchstart'in window)&&frameCount<240){ctx.font='10px Arial';ctx.fillStyle='rgba(255,255,255,0.2)';ctx.textAlign='center';
