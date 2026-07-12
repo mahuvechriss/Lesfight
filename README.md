@@ -1,85 +1,83 @@
 # LES FIGHT 🔥
 
-A next-generation 3D fighting game built with **Unreal Engine 5.4** - now also available as a **Web Edition**!
+A 3D fighting game built with **Unreal Engine 5.4** — also available as a **Web Edition**!
 
 ---
 
-## 🎮 PLAY NOW (No install needed!)
+## 🎮 PLAY NOW — No Install Needed!
 
-> **Open on your phone or computer:**
+### 👉 **[OPEN LES FIGHT IN YOUR BROWSER](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mahuvechriss/Lesfight/main/WebGame/index.html)**
 
-[![PLAY LES FIGHT](https://img.shields.io/badge/🎮-PLAY%20LES%20FIGHT%20NOW!-ff4444?style=for-the-badge&logo=html5)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/mahuvechriss/Lesfight/main/WebGame/index.html)
+Just tap the link above! Opens instantly on **any phone or computer**. No app, no download, no signup.
 
-**Just tap the button above!** Works on any phone or computer browser.
+**GitHub Pages** (if active): https://mahuvechriss.github.io/Lesfight/
 
-### Touch Controls (Mobile)
+---
+
+### 📱 Touch Controls (Mobile)
+
 | Button | Action |
 |--------|--------|
-| ◀ ▶ | Move left/right |
+| ◀ ▶ | Move |
 | 🛡️ | Block |
 | 👊 | Light Punch |
 | 💥 | Heavy Punch |
 | 🦵 | Light Kick |
 | 🦶 | Heavy Kick |
-| ⚡ | Special Move (30% Super) |
-| 🌟 | Ultimate Move (100% Super) |
+| ⚡ | Special (needs 30% Super) |
+| 🌟 | Ultimate (needs 100% Super) |
 
-### Keyboard Controls (PC)
-| Key | Action |
-|-----|--------|
-| A / D | Move |
-| S | Block |
-| J | Light Punch |
-| K | Heavy Punch |
-| L | Light Kick |
-| ; / : | Heavy Kick |
-| U | Special Move |
-| I | Ultimate Move |
+### ⌨️ Keyboard Controls (PC)
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| **A / D** | Move | **J** | Light Punch |
+| **S** | Block | **K** | Heavy Punch |
+| **U** | Special | **L** | Light Kick |
+| **I** | Ultimate | **; / :** | Heavy Kick |
 
 ---
 
-## 🎯 Features
+## 🎯 Game Features
 
-- ⚔️ **Complete fighting game** with health bars, super meter, and combos
+- ⚔️ Full fighting game with health bars, super meter, and combos
 - 🤖 **4 AI difficulty levels**: Easy → Normal → Hard → Expert
 - 🏆 **Round system**: Best of 1, 3, or 5 rounds
 - 💥 **6 attack types**: Light/Heavy Punch, Light/Heavy Kick, Special, Ultimate
-- 🎨 **Animated fighters** with hit reactions, blocking, and KO states
-- 🌟 **Particle effects**, screen shake, and sound effects
-- 📱 **Touch-optimized** for mobile play
-- 🎮 **Keyboard controls** for PC
+- 🎨 Animated fighters with hit reactions, blocking, and KO states
+- 🌟 Particle effects, screen shake, and sound effects
+- 📱 Touch-optimized for mobile play
 
 ---
 
 ## 🛠️ Unreal Engine 5.4 Project
 
-This repository contains the full C++ source code for the UE5 version of LES FIGHT:
+This repo contains the full C++ source (716+ files, 19 modules):
 
-| Module | Files | Description |
-|--------|-------|-------------|
-| Core | 22 | GameInstance, GameMode, PlayerController, GameState, HUD |
-| Combat | 22 | ComboManager, DamageManager, HitDetection, Blocking |
-| Animation | 22 | StateMachine, IK, Blending, MotionWarping |
-| AI | 25+ | DecisionManager, Perception, CombatAI, Difficulty |
-| Audio | 30+ | Music, SFX, Voice, Spatial, Dynamic Music |
-| VFX | 18 | Niagara, Impact, PostProcessing, Cinematic |
-| Arena | 18 | Environment, Weather, Lighting, Destructibles |
-| UI | 30+ | HUD, Menus, Settings, Character Select |
-| Network | 20+ | Multiplayer, Replication, Lag Compensation |
-| Performance | 16 | FPS Monitor, Memory Tracker, Quality Settings |
-| QA | 16 | Automation, Testing, Bug Tracking |
-| Release | 14 | Build Manager, Packaging, Versioning |
-| **Total** | **716+** | **19 complete modules** |
+| Module | Files | Purpose |
+|--------|-------|---------|
+| Core | 22 | GameInstance, GameMode, PlayerController |
+| Combat | 22 | ComboManager, Damage, HitDetection |
+| AI | 25+ | DecisionManager, Perception, CombatAI |
+| Animation | 22 | StateMachine, IK, MotionWarping |
+| Audio | 30+ | Music, SFX, Voice, Spatial |
+| VFX | 18 | Niagara, Impact, PostProcessing |
+| Arena | 18 | Environment, Weather, Lighting |
+| UI | 30+ | HUD, Menus, Settings |
+| Network | 20+ | Multiplayer, Replication |
+| Performance | 16 | FPS, Memory, Quality |
+| QA | 16 | Automation, Testing |
+| Release | 14 | Build, Packaging, Versioning |
 
 ---
 
-## 📱 Android Build
+## 📱 Android APK Build
 
-To build the Android APK, you need **Unreal Engine 5.4** installed:
-1. Install UE 5.4 via Epic Games Launcher (requires ~30GB free space)
+Need **Unreal Engine 5.4** (~30GB):
+1. Install UE5.4 via Epic Games Launcher
 2. Open `LesFight.uproject` in UE5
-3. Set up Android SDK via Project Settings
-4. File → Package Project → Android
+3. Set up Android SDK in Project Settings
+4. **File → Package Project → Android**
 
 ---
 
